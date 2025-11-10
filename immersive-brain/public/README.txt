@@ -1,0 +1,1 @@
+Place brain.glb here. Reuse existing model from ../public/models/brain.glb of main project.
