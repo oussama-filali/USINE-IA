@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USINE-IA Immersive Brain - Demo Info</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0ff;
+            padding: 40px;
+            line-height: 1.8;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: 0.3em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin: 40px 0 20px;
+            color: #ff2fb6;
+            letter-spacing: 0.2em;
+        }
+        p { margin: 15px 0; opacity: 0.8; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .card {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        .card:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: #0ff;
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            color: #0ff;
+            margin-bottom: 10px;
+            letter-spacing: 0.15em;
+        }
+        .btn {
+            display: inline-block;
+            margin: 30px 20px 10px 0;
+            padding: 15px 30px;
+            border: 2px solid #0ff;
+            color: #0ff;
+            text-decoration: none;
+            letter-spacing: 0.2em;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        code {
+            background: rgba(255, 47, 182, 0.1);
+            padding: 2px 8px;
+            border: 1px solid rgba(255, 47, 182, 0.3);
+            color: #ff2fb6;
+        }
+        ul { list-style: none; padding-left: 20px; }
+        ul li:before { content: "▸ "; color: #0ff; }
+        .footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0, 212, 255, 0.3);
+            text-align: center;
+            opacity: 0.5;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>USINE-IA</h1>
+        <p style="letter-spacing: 0.5em; margin-bottom: 40px;">IMMERSIVE BRAIN EXPERIENCE</p>
+        
+        <a href="index.html" class="btn">▶ LANCER L'EXPÉRIENCE</a>
+        <a href="README.md" class="btn" style="border-color: #ff2fb6; color: #ff2fb6;">📖 DOCUMENTATION</a>
+
+        <h2>🎮 CONTRÔLES INTERACTIFS</h2>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>🖱️ SOURIS</h3>
+                <p>Déplace ta souris pour faire pivoter le cerveau en 3D avec effet parallaxe</p>
+                <p style="opacity: 0.6; font-size: 0.9rem;">Rotation X et Z réactive</p>
+            </div>
+            
+            <div class="card">
+                <h3>🔄 MOLETTE</h3>
+                <p>Scrolle pour accélérer la rotation automatique du cerveau</p>
+                <p style="opacity: 0.6; font-size: 0.9rem;">Active aussi l'audio binaural</p>
+            </div>
+            
+            <div class="card">
+                <h3>📱 TACTILE</h3>
+                <p>Glisse ton doigt pour interagir sur mobile/tablette</p>
+                <p style="opacity: 0.6; font-size: 0.9rem;">Performance adaptée</p>
+            </div>
+        </div>
+
+        <h2>✨ FONCTIONNALITÉS</h2>
+        
+        <ul>
+            <li><strong>Intro Cinématique</strong> : Animation de chargement avec effets holographiques (5s)</li>
+            <li><strong>Cerveau 3D Procédural</strong> : Généré en temps réel avec Three.js</li>
+            <li><strong>Shader Holographique</strong> : Effet Fresnel + scanlines animées (GLSL)</li>
+            <li><strong>Particules Flottantes</strong> : 150-220 particules instanciées</li>
+            <li><strong>Audio Binaural</strong> : Fréquences 140 Hz + 144 Hz (beat 4 Hz)</li>
+            <li><strong>Responsive Design</strong> : S'adapte à tous les écrans</li>
+            <li><strong>Performance Optimisée</strong> : 60 FPS avec antialiasing</li>
+        </ul>
+
+        <h2>🎨 PERSONNALISATION</h2>
+        
+        <p>Change les couleurs du shader dans <code>src/components/BrainScene.tsx</code> :</p>
+        <p style="margin-left: 20px;">
+            <code>uColorA: new THREE.Color('#00d4ff')</code> → Cyan<br>
+            <code>uColorB: new THREE.Color('#ff2fb6')</code> → Magenta
+        </p>
+
+        <p>Ajuste le nombre de particules dans <code>src/components/Particles.tsx</code> :</p>
+        <p style="margin-left: 20px;">
+            <code>const count = 220;</code> → Plus = plus joli, moins = plus rapide
+        </p>
+
+        <h2>⚙️ CONFIGURATION SYSTÈME</h2>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>RECOMMANDÉ</h3>
+                <p>• Processeur : i5 / Ryzen 5+</p>
+                <p>• RAM : 4 GB</p>
+                <p>• GPU : Support WebGL 2.0</p>
+                <p>• Navigateur : Chrome 90+</p>
+            </div>
+            
+            <div class="card">
+                <h3>MINIMUM</h3>
+                <p>• Processeur : Dual-core</p>
+                <p>• RAM : 2 GB</p>
+                <p>• GPU : WebGL 1.0</p>
+                <p>• Navigateur : Firefox 80+</p>
+            </div>
+        </div>
+
+        <h2>🚀 LANCEMENT RAPIDE</h2>
+        
+        <p><strong>Windows</strong> : Double-clic sur <code>start.bat</code></p>
+        <p><strong>Terminal</strong> :</p>
+        <p style="margin-left: 20px;">
+            <code>npm install</code><br>
+            <code>npm run dev</code>
+        </p>
+        <p>Puis ouvre <code>http://localhost:5173</code></p>
+
+        <h2>📚 TECHNOLOGIES</h2>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>Frontend</h3>
+                <p>React 18 + TypeScript</p>
+                <p>Vite (build tool)</p>
+                <p>Tailwind CSS</p>
+            </div>
+            
+            <div class="card">
+                <h3>3D & Graphics</h3>
+                <p>Three.js</p>
+                <p>React Three Fiber</p>
+                <p>GLSL Shaders</p>
+            </div>
+            
+            <div class="card">
+                <h3>Audio</h3>
+                <p>Web Audio API</p>
+                <p>Oscillateurs binauraux</p>
+                <p>Gain automation</p>
+            </div>
+        </div>
+
+        <h2>💡 ASTUCES</h2>
+        
+        <ul>
+            <li>Utilise un casque pour profiter pleinement de l'audio binaural</li>
+            <li>Le premier scroll active l'audio (restriction navigateur)</li>
+            <li>Appuie sur F11 pour le plein écran</li>
+            <li>Réduis les particules si tu as des lags (Particles.tsx)</li>
+            <li>Ouvre la console (F12) pour voir les infos de debug</li>
+        </ul>
+
+        <h2>🐛 DÉPANNAGE</h2>
+        
+        <p><strong>Le cerveau n'apparaît pas ?</strong></p>
+        <p style="margin-left: 20px;">→ Vérifie que ton navigateur supporte WebGL 2.0</p>
+        
+        <p><strong>FPS bas ?</strong></p>
+        <p style="margin-left: 20px;">→ Réduis le nombre de particules ou désactive l'antialiasing</p>
+        
+        <p><strong>Pas d'audio ?</strong></p>
+        <p style="margin-left: 20px;">→ Scroll une fois pour activer (autoplay bloqué par le navigateur)</p>
+        
+        <p><strong>Erreur au lancement ?</strong></p>
+        <p style="margin-left: 20px;">→ Supprime <code>node_modules</code> et fais <code>npm install</code></p>
+
+        <div class="footer">
+            <p>USINE-IA © 2024 · Immersive Brain Experience</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+# Node
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+.next/
+dist/
+*.cache/
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Editor
+.vscode/
+/*.code-workspace
+.idea/
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage
+coverage/
+
+# Misc
+*.log
+*.tmp
+*.swp
+
+# Vite
+vite.config.ts.timestamp-* 
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Local brain assets if large
+public/models/*.blend
+public/models/*.fbx
+
+# Avoid committing large GLB test files (keep canonical brain.glb tracked if needed)
+#public/models/brain.glb
+
+# Lock files ignored optionally (uncomment if desired)
+#package-lock.json
+#pnpm-lock.yaml
+#yarn.lock
