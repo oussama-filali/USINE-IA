@@ -1,6 +1,6 @@
 import { useRef, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useGLTF, Environment, PerspectiveCamera } from '@react-three/drei';
+import { useGLTF, Environment, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
 function SpaceStationModel() {
@@ -32,7 +32,7 @@ function SpaceStationModel() {
     <primitive 
       ref={modelRef}
       object={scene} 
-      scale={2.5}
+      scale={2}
       position={[0, 0, 0]}
     />
   );
@@ -42,12 +42,12 @@ function Scene() {
   const { camera } = useThree();
 
   useEffect(() => {
-    camera.position.set(0, 3, 8);
+    camera.position.set(0, 5, 15);
   }, [camera]);
 
   return (
     <>
-      <PerspectiveCamera makeDefault position={[0, 3, 8]} fov={60} />
+      <PerspectiveCamera makeDefault position={[0, 5, 15]} fov={60} />
       
       <ambientLight intensity={0.3} />
       <directionalLight position={[10, 10, 5]} intensity={1} color="#ffffff" />
@@ -59,18 +59,6 @@ function Scene() {
         <Environment preset="night" />
       </Suspense>
 
-      <OrbitControls
-        enableZoom={true}
-        enablePan={false}
-        minDistance={3}
-        maxDistance={20}
-        maxPolarAngle={Math.PI / 1.5}
-        minPolarAngle={Math.PI / 3}
-        autoRotate={false}
-        rotateSpeed={0.5}
-        zoomSpeed={1.2}
-      />
-
       <fog attach="fog" args={['#000000', 15, 40]} />
     </>
   );
@@ -78,8 +66,9 @@ function Scene() {
 
 export default function SpaceStationScene() {
   return (
-    <div className="absolute inset-0 z-10">
+    <div className="absolute inset-0 pointer-events-none">
       <Canvas
+        className="pointer-events-none"
         gl={{
           antialias: true,
           alpha: true,
