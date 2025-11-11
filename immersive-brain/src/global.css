@@ -64,10 +64,10 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-@keyframes fadeInLeft {
+@keyframes fadeInRight {
   from {
     opacity: 0;
-    transform: translateX(-40px);
+    transform: translateX(40px);
   }
   to {
     opacity: 1;

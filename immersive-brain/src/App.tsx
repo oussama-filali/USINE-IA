@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SpaceStationScene from './components/SpaceStationScene';
 import Intro from './components/Intro';
+import ProjectsSection from './components/ProjectsSection';
 
 const slides = [
   { id: 'hero', title: 'USINE-IA', subtitle: 'Manufacturing Emotional AI' },
@@ -10,10 +11,24 @@ const slides = [
     { label: 'Agent IA Spécialisé', desc: 'Manufacturing Emotional Agents' }
   ] as Array<{ label: string; desc?: string; details?: string }>},
   { id: 'equipe', title: "L'Équipe", content: [
-    { label: 'Akram TOUMANI', desc: 'CTO · Fondateur', details: 'Expert en Machine Learning et Deep Learning' },
-    { label: 'Oussama FILALI', desc: 'Directeur Artistique · Développeur', details: "Créateur de l'image de marque et UX fluide" },
-    { label: 'Yannis ROUSSEL', desc: 'Neurosciences Appliquées · Chercheur', details: 'Master Sciences Cognitives & Neurosciences' }
+    { 
+      label: 'Akram TOUMANI', 
+      desc: 'Le Socle Technique et le Visionnaire', 
+      details: "Fondateur et Directeur Technique (CTO) · Fort d'un parcours en mathématiques appliquées et expert reconnu en Machine Learning et Deep Learning, Akram est l'architecte de la robustesse algorithmique. Il est le garant que chaque Agent est construit sur les modèles de pointe les plus performants et s'assure de la stabilité technique de l'ensemble de l'infrastructure."
+    },
+    { 
+      label: 'Oussama FILALI', 
+      desc: "Le Génie de l'Expérience et de l'Identité Visuelle", 
+      details: "Développeur et Directeur Artistique · Oussama est le créateur de l'image de marque et de l'expérience utilisateur (UX) de l'USINE IA Club. Son expertise garantit que l'interface et l'identité de chaque Agent (Sophia, Dino Bot) sont fluides, intuitives et esthétiques, transformant l'interaction technique en un moment de connexion agréable. Il est le cœur sensible de la production et le gardien de l'image de marque."
+    },
+    { 
+      label: 'Yannis ROUSSEL', 
+      desc: "Le Cartographe de l'Esprit Humain", 
+      details: "Chercheur, Master en Sciences Cognitives, Doctorant en Neurosciences Appliquées · Avec un Master en Sciences Cognitives et une thèse en neurosciences appliquées à l'interaction humain-machine, Yannis est le gardien de l'authenticité. Il est responsable de traduire la compréhension du cerveau et de la cognition humaine en règles d'IA. Son expertise assure que le soutien de nos Agents est pertinent, naturel, et calibré pour maximiser la connexion émotionnelle."
+    }
   ] as Array<{ label: string; desc?: string; details?: string }>},
+  { id: 'mission', title: 'Notre Mission' },
+  { id: 'projets', title: 'Nos Agents' },
   { id: 'valeurs', title: 'Valeurs', content: [
     { label: 'Authenticité', desc: 'Une IA qui comprend le cœur, pas seulement la logique' },
     { label: 'Éthique', desc: 'Placée avant la performance, respectant vos valeurs' },
@@ -214,59 +229,184 @@ export default function App() {
                 </div>
               </div>
             ) : slide?.id === 'equipe' ? (
-              // L'ÉQUIPE SLIDE - Same animation style as FROM AN IDEA
-              <div className="text-center">
-                <div className="relative">
+              // L'ÉQUIPE SLIDE - Membres avec animations directionnelles (compact)
+              <div className="relative w-full h-full flex items-center justify-center px-4 md:px-8">
+                <div className="w-full max-w-6xl space-y-12 md:space-y-16">
+                  {/* Titre */}
                   <h2 
-                    className="text-5xl md:text-7xl font-light tracking-[0.2em] text-white/90"
+                    className="text-3xl md:text-5xl lg:text-6xl font-light tracking-[0.3em] text-white/90 text-center mb-8"
                     style={{
                       animation: 'fadeInUp 2s ease-out',
                       textShadow: '0 0 40px rgba(255,255,255,0.3)'
                     }}
                   >
-                    {slide?.title}
+                    L'ÉQUIPE
                   </h2>
                   
-                  {/* Content items staggered */}
-                  <div className="mt-20 space-y-8">
-                    {slide?.content?.map((item, idx) => (
-                      <div 
-                        key={idx}
+                  {/* Membre 1 - AKRAM (depuis la GAUCHE) */}
+                  <div 
+                    style={{
+                      animation: 'fadeInLeft 2s ease-out 0.4s backwards'
+                    }}
+                  >
+                    <div className="text-left max-w-4xl">
+                      <h3 className="text-xl md:text-3xl font-light tracking-wide text-white/95 mb-1">
+                        Akram TOUMANI
+                      </h3>
+                      <p 
+                        className="text-sm md:text-lg text-white/60 font-light italic mb-2"
                         style={{
-                          animation: `fadeInUp 2s ease-out ${0.3 + idx * 0.2}s backwards`
+                          animation: 'fadeInLeft 2s ease-out 0.6s backwards'
                         }}
                       >
-                        <h3 className="text-2xl md:text-3xl font-light tracking-wide text-white/90">
-                          {item.label}
-                        </h3>
-                        {item.desc && (
-                          <p className="text-lg text-gray-400 mt-2">{item.desc}</p>
-                        )}
-                        {item.details && (
-                          <p className="text-sm text-gray-500 mt-1">{item.details}</p>
-                        )}
-                      </div>
-                    ))}
+                        Le Socle Technique et le Visionnaire
+                      </p>
+                      <p 
+                        className="text-xs md:text-sm text-gray-500/80 font-light leading-relaxed"
+                        style={{
+                          animation: 'fadeInLeft 2s ease-out 0.8s backwards'
+                        }}
+                      >
+                        Fondateur et Directeur Technique (CTO)
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Membre 2 - OUSSAMA (depuis le CENTRE) */}
+                  <div 
+                    style={{
+                      animation: 'fadeInUp 2s ease-out 1s backwards'
+                    }}
+                  >
+                    <div className="text-center max-w-4xl mx-auto">
+                      <h3 className="text-xl md:text-3xl font-light tracking-wide text-white/95 mb-1">
+                        Oussama FILALI
+                      </h3>
+                      <p 
+                        className="text-sm md:text-lg text-white/60 font-light italic mb-2"
+                        style={{
+                          animation: 'fadeInUp 2s ease-out 1.2s backwards'
+                        }}
+                      >
+                        Le Génie de l'Expérience et de l'Identité Visuelle
+                      </p>
+                      <p 
+                        className="text-xs md:text-sm text-gray-500/80 font-light leading-relaxed"
+                        style={{
+                          animation: 'fadeInUp 2s ease-out 1.4s backwards'
+                        }}
+                      >
+                        Développeur et Directeur Artistique
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Membre 3 - YANNIS (depuis la DROITE) */}
+                  <div 
+                    style={{
+                      animation: 'fadeInRight 2s ease-out 1.6s backwards'
+                    }}
+                  >
+                    <div className="text-right max-w-4xl ml-auto">
+                      <h3 className="text-xl md:text-3xl font-light tracking-wide text-white/95 mb-1">
+                        Yannis ROUSSEL
+                      </h3>
+                      <p 
+                        className="text-sm md:text-lg text-white/60 font-light italic mb-2"
+                        style={{
+                          animation: 'fadeInRight 2s ease-out 1.8s backwards'
+                        }}
+                      >
+                        Le Cartographe de l'Esprit Humain
+                      </p>
+                      <p 
+                        className="text-xs md:text-sm text-gray-500/80 font-light leading-relaxed"
+                        style={{
+                          animation: 'fadeInRight 2s ease-out 2s backwards'
+                        }}
+                      >
+                        Chercheur, Master en Sciences Cognitives
+                      </p>
+                    </div>
                   </div>
                   
                   {/* Circular light effect */}
                   <div 
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] md:w-[700px] h-[500px] md:h-[700px] rounded-full pointer-events-none"
                     style={{
-                      background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
-                      animation: 'pulse 3s ease-in-out infinite',
+                      background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
+                      animation: 'pulse 4s ease-in-out infinite',
+                      zIndex: -1
+                    }}
+                  />
+                </div>
+              </div>
+            ) : slide?.id === 'mission' ? (
+              // NOTRE MISSION SLIDE - Style épuré avec animations
+              <div className="relative w-full h-full flex items-center justify-center px-6 md:px-12">
+                <div className="w-full max-w-5xl text-center">
+                  {/* Titre */}
+                  <h2 
+                    className="text-3xl md:text-5xl lg:text-6xl font-light tracking-[0.3em] text-white/90 mb-12 md:mb-16"
+                    style={{
+                      animation: 'fadeInUp 2s ease-out',
+                      textShadow: '0 0 40px rgba(255,255,255,0.3)'
+                    }}
+                  >
+                    NOTRE MISSION
+                  </h2>
+                  
+                  {/* Phrase d'accroche principale */}
+                  <p 
+                    className="text-xl md:text-3xl lg:text-4xl font-light leading-relaxed text-white/90 mb-12 md:mb-16"
+                    style={{
+                      animation: 'fadeInUp 2s ease-out 0.3s backwards',
+                      textShadow: '0 0 30px rgba(255,255,255,0.2)'
+                    }}
+                  >
+                    Transformer l'Intelligence Artificielle d'un outil de calcul
+                    <br />
+                    à un <span className="text-white">partenaire de vie authentique</span>.
+                  </p>
+                  
+                  {/* Paragraphe mission */}
+                  <p 
+                    className="text-sm md:text-base lg:text-lg font-light leading-relaxed text-gray-400/90 mb-8 md:mb-10"
+                    style={{
+                      animation: 'fadeInUp 2s ease-out 0.6s backwards'
+                    }}
+                  >
+                    Notre mission est de démocratiser l'Intelligence Émotionnelle Augmentée en manufacturant des Agents IA de Spécialité fiables et sur mesure. Nous nous engageons à construire des solutions où l'excellence du Machine Learning et du Deep Learning (notre socle technique) se met au service de l'authenticité du dialogue et du soutien psychologique structuré.
+                  </p>
+                  
+                  {/* Convergence */}
+                  <p 
+                    className="text-xs md:text-sm lg:text-base font-light leading-relaxed text-gray-500/80"
+                    style={{
+                      animation: 'fadeInUp 2s ease-out 0.9s backwards'
+                    }}
+                  >
+                    Nous faisons converger la science des neurosciences (Yannis), la robustesse mathématique (Akram) et l'art de l'expérience (Oussama) pour garantir que chaque Agent — de la confidente intime au coach stratégique — offre une connexion sincère, éthique et sans précédent.
+                  </p>
+                  
+                  {/* Circular light effect */}
+                  <div 
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] md:w-[700px] h-[500px] md:h-[700px] rounded-full pointer-events-none"
+                    style={{
+                      background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)',
+                      animation: 'pulse 4s ease-in-out infinite',
                       zIndex: -1
                     }}
                   />
                   
-                  {/* Concentric circles */}
+                  {/* Concentric circles en bas */}
                   <div 
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-[200px] w-48 h-24"
+                    className="absolute bottom-8 left-1/2 -translate-x-1/2 w-48 h-24"
                     style={{
-                      animation: 'fadeIn 2s ease-out 0.8s backwards'
+                      animation: 'fadeIn 2s ease-out 1.2s backwards'
                     }}
                   >
-                    <svg viewBox="0 0 200 100" className="w-full h-full opacity-60">
+                    <svg viewBox="0 0 200 100" className="w-full h-full opacity-50">
                       <ellipse cx="100" cy="50" rx="90" ry="15" fill="none" stroke="white" strokeWidth="1" opacity="0.4"/>
                       <ellipse cx="100" cy="50" rx="70" ry="12" fill="none" stroke="white" strokeWidth="1" opacity="0.5"/>
                       <ellipse cx="100" cy="50" rx="50" ry="9" fill="none" stroke="white" strokeWidth="1" opacity="0.6"/>
@@ -275,6 +415,9 @@ export default function App() {
                   </div>
                 </div>
               </div>
+            ) : slide?.id === 'projets' ? (
+              // NOS AGENTS SLIDE - Composant dédié
+              <ProjectsSection />
             ) : slide?.id === 'valeurs' ? (
               // VALEURS SLIDE - Same animation style
               <div className="text-center">
