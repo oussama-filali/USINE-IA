@@ -49,14 +49,14 @@ export default function App() {
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastWheelTime = useRef<number>(0);
 
-  // Auto-advance from 3D showcase to hero after 5 seconds
+  // Auto-advance from 3D showcase to hero - Plus rapide
   useEffect(() => {
     if (introComplete && currentSlide === -1) {
       const timer = setTimeout(() => {
         setIsTransitioning(true);
         setCurrentSlide(0);
-        setTimeout(() => setIsTransitioning(false), 1000);
-      }, 5000);
+        setTimeout(() => setIsTransitioning(false), 800); // Réduit de 1000ms à 800ms
+      }, 3000); // Réduit de 5000ms à 3000ms
 
       return () => clearTimeout(timer);
     }
@@ -69,7 +69,7 @@ export default function App() {
       e.preventDefault();
       
       const now = Date.now();
-      if (now - lastWheelTime.current < 150) return;
+      if (now - lastWheelTime.current < 120) return; // Réduit de 150ms à 120ms
       
       if (isTransitioning) return;
       
@@ -77,7 +77,7 @@ export default function App() {
         clearTimeout(wheelTimeoutRef.current);
       }
 
-      const threshold = 10;
+      const threshold = 8; // Réduit de 10 à 8 pour plus de réactivité
       
       if (Math.abs(e.deltaY) < threshold) return;
 
@@ -87,13 +87,13 @@ export default function App() {
         if (e.deltaY > 0 && currentSlide < slides.length - 1) {
           setIsTransitioning(true);
           setCurrentSlide(prev => prev + 1);
-          setTimeout(() => setIsTransitioning(false), 1000);
+          setTimeout(() => setIsTransitioning(false), 800); // Réduit de 1000ms à 800ms
         } else if (e.deltaY < 0 && currentSlide > -1) {
           setIsTransitioning(true);
           setCurrentSlide(prev => prev - 1);
-          setTimeout(() => setIsTransitioning(false), 1000);
+          setTimeout(() => setIsTransitioning(false), 800); // Réduit de 1000ms à 800ms
         }
-      }, 100);
+      }, 80); // Réduit de 100ms à 80ms
     };
 
     window.addEventListener('wheel', handleWheel, { passive: false });
@@ -121,7 +121,7 @@ export default function App() {
 
       {/* Dark overlay that increases with slides (except during 3D showcase) */}
       <div 
-        className="absolute inset-0 bg-black transition-opacity duration-1000 ease-out"
+        className="absolute inset-0 bg-black transition-opacity duration-700 ease-out"
         style={{ 
           zIndex: 1,
           opacity: currentSlide === -1 ? 0 : currentSlide === 0 ? 0.3 : 0.75
@@ -135,20 +135,20 @@ export default function App() {
           style={{ 
             zIndex: 2,
             opacity: isTransitioning ? 0 : 1,
-            transition: 'opacity 1s ease-out'
+            transition: 'opacity 0.7s ease-out'
           }}
         >
-          <div className="text-center">
-            <h1 className="text-2xl font-light mb-4 text-white/70 tracking-wider">
+          <div className="text-center px-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-light mb-3 md:mb-4 text-white/80 tracking-[0.3em]">
               USINE-IA
             </h1>
-            <p className="text-sm text-white/50 tracking-widest">
-              EXPLORING THE STATION
+            <p className="text-[10px] sm:text-xs md:text-sm text-white/40 tracking-[0.4em] font-light">
+              MANUFACTURING EMOTIONAL AI
             </p>
           </div>
           
-          {/* Scroll hint */}
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-white/40 text-xs tracking-widest animate-bounce">
+          {/* Scroll hint - Centré */}
+          <div className="absolute bottom-8 sm:bottom-10 md:bottom-12 left-1/2 -translate-x-1/2 text-white/30 text-[10px] sm:text-xs tracking-[0.3em] animate-bounce font-light text-center">
             SCROLL TO CONTINUE
           </div>
         </div>
@@ -161,8 +161,8 @@ export default function App() {
             className="w-full max-w-4xl"
             style={{ 
               opacity: isTransitioning ? 0 : 1,
-              transform: isTransitioning ? 'translateY(30px)' : 'translateY(0)',
-              transition: 'all 1s cubic-bezier(0.4, 0, 0.2, 1)'
+              transform: isTransitioning ? 'translateY(20px)' : 'translateY(0)',
+              transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
             }}
           >
             {slide?.id === 'hero' ? (
@@ -288,7 +288,7 @@ export default function App() {
                   >
                     <div className="text-center max-w-4xl mx-auto">
                       <h3 className="text-xl md:text-3xl font-light tracking-wide text-white/95 mb-1">
-                        Oussama FILALI
+                        Oussama HALIMA-FILALI
                       </h3>
                       <p 
                         className="text-sm md:text-lg text-white/60 font-light italic mb-2"
