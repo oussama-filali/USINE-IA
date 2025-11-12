@@ -18,7 +18,7 @@ const slides = [
       details: "Fondateur et Directeur Technique (CTO) · Fort d'un parcours en mathématiques appliquées et expert reconnu en Machine Learning et Deep Learning, Akram est l'architecte de la robustesse algorithmique. Il est le garant que chaque Agent est construit sur les modèles de pointe les plus performants et s'assure de la stabilité technique de l'ensemble de l'infrastructure."
     },
     { 
-      label: 'Oussama FILALI', 
+      label: 'Oussama HALIMA-FILALI', 
       desc: "Le Génie de l'Expérience et de l'Identité Visuelle", 
       details: "Développeur et Directeur Artistique · Oussama est le créateur de l'image de marque et de l'expérience utilisateur (UX) de l'USINE IA Club. Son expertise garantit que l'interface et l'identité de chaque Agent (Sophia, Dino Bot) sont fluides, intuitives et esthétiques, transformant l'interaction technique en un moment de connexion agréable. Il est le cœur sensible de la production et le gardien de l'image de marque."
     },
@@ -39,11 +39,6 @@ const slides = [
     { label: "L'Ingénierie de Prompt", desc: 'Nov 2024' },
     { label: 'Résoudre la Monotonie', desc: 'Oct 2024' },
     { label: 'RAG et Fiabilité', desc: 'Sep 2024' }
-  ] as Array<{ label: string; desc?: string; details?: string }>},
-  { id: 'contact', title: 'Contact', content: [
-    { label: 'contact@usine-ia.com' },
-    { label: 'Twitter' },
-    { label: 'GitHub' }
   ] as Array<{ label: string; desc?: string; details?: string }>}
 ];
 
@@ -181,51 +176,63 @@ export default function App() {
                 </p>
               </div>
             ) : slide?.id === '2024' ? (
-              // FROM MARSEILLE SLIDE
-              <div className="text-center">
-                <div className="relative">
-                  <h2 
-                    className="text-6xl md:text-8xl font-light tracking-[0.3em] text-white/90"
-                    style={{
-                      animation: 'fadeInUp 2s ease-out',
-                      textShadow: '0 0 40px rgba(255,255,255,0.3)'
-                    }}
-                  >
-                    FROM
-                  </h2>
-                  <h2 
-                    className="text-6xl md:text-8xl font-light tracking-[0.3em] text-white/90 mt-4"
-                    style={{
-                      animation: 'fadeInUp 2s ease-out 0.3s backwards',
-                      textShadow: '0 0 40px rgba(255,255,255,0.3)'
-                    }}
-                  >
-                    MARSEILLE
-                  </h2>
-                  
-                  {/* Circular light effect behind text */}
-                  <div 
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
-                    style={{
-                      background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
-                      animation: 'pulse 3s ease-in-out infinite',
-                      zIndex: -1
-                    }}
-                  />
-                  
-                  {/* Concentric circles */}
-                  <div 
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-[100px] w-48 h-24"
-                    style={{
-                      animation: 'fadeIn 2s ease-out 0.6s backwards'
-                    }}
-                  >
-                    <svg viewBox="0 0 200 100" className="w-full h-full opacity-60">
-                      <ellipse cx="100" cy="50" rx="90" ry="15" fill="none" stroke="white" strokeWidth="1" opacity="0.4"/>
-                      <ellipse cx="100" cy="50" rx="70" ry="12" fill="none" stroke="white" strokeWidth="1" opacity="0.5"/>
-                      <ellipse cx="100" cy="50" rx="50" ry="9" fill="none" stroke="white" strokeWidth="1" opacity="0.6"/>
-                      <ellipse cx="100" cy="50" rx="30" ry="6" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
-                    </svg>
+              // FROM MARSEILLE SLIDE - Responsive et adapté à tous les écrans
+              <div className="relative w-full h-full flex items-center justify-center px-4 md:px-8">
+                <div className="text-center">
+                  <div className="relative">
+                    <h2 
+                      className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-[0.2em] md:tracking-[0.3em] text-white/90"
+                      style={{
+                        animation: 'fadeInUp 2s ease-out',
+                        textShadow: '0 0 30px rgba(255,255,255,0.3), 0 0 60px rgba(255,255,255,0.15)'
+                      }}
+                    >
+                      FROM
+                    </h2>
+                    <h2 
+                      className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-[0.2em] md:tracking-[0.3em] text-white/90 mt-2 md:mt-4"
+                      style={{
+                        animation: 'fadeInUp 2s ease-out 0.3s backwards',
+                        textShadow: '0 0 30px rgba(255,255,255,0.3), 0 0 60px rgba(255,255,255,0.15)'
+                      }}
+                    >
+                      MARSEILLE
+                    </h2>
+                    
+                    {/* Circular light effect behind text - Responsive */}
+                    <div 
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] rounded-full pointer-events-none"
+                      style={{
+                        background: 'radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 50%, transparent 70%)',
+                        animation: 'pulse 4s ease-in-out infinite',
+                        zIndex: -1
+                      }}
+                    />
+                    
+                    {/* Concentric circles - Responsive positioning */}
+                    <div 
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-[60px] sm:translate-y-[80px] md:translate-y-[100px] lg:translate-y-[120px] w-32 h-16 sm:w-40 sm:h-20 md:w-48 md:h-24 lg:w-56 lg:h-28"
+                      style={{
+                        animation: 'fadeIn 2s ease-out 0.6s backwards'
+                      }}
+                    >
+                      <svg viewBox="0 0 200 100" className="w-full h-full opacity-50 md:opacity-60">
+                        <ellipse cx="100" cy="50" rx="90" ry="15" fill="none" stroke="white" strokeWidth="0.8" opacity="0.4"/>
+                        <ellipse cx="100" cy="50" rx="70" ry="12" fill="none" stroke="white" strokeWidth="0.8" opacity="0.5"/>
+                        <ellipse cx="100" cy="50" rx="50" ry="9" fill="none" stroke="white" strokeWidth="0.8" opacity="0.6"/>
+                        <ellipse cx="100" cy="50" rx="30" ry="6" fill="none" stroke="white" strokeWidth="0.8" opacity="0.7"/>
+                      </svg>
+                    </div>
+                    
+                    {/* Year subtitle - Subtle detail */}
+                    <p 
+                      className="text-xs sm:text-sm md:text-base text-white/40 tracking-[0.3em] mt-8 md:mt-12"
+                      style={{
+                        animation: 'fadeIn 2s ease-out 0.9s backwards'
+                      }}
+                    >
+                      2024
+                    </p>
                   </div>
                 </div>
               </div>
