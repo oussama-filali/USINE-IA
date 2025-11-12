@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import SpaceStationScene from './components/SpaceStationScene';
 import Intro from './components/Intro';
 import ProjectsSection from './components/ProjectsSection';
+import NewsletterSectionUpdated from './components/NewsletterSectionUpdated';
 
 const slides = [
   { id: 'hero', title: 'USINE-IA', subtitle: 'Manufacturing Emotional AI' },
@@ -478,64 +479,8 @@ export default function App() {
                 </div>
               </div>
             ) : slide?.id === 'articles' ? (
-              // ARTICLES SLIDE - Same animation style
-              <div className="text-center">
-                <div className="relative">
-                  <h2 
-                    className="text-5xl md:text-7xl font-light tracking-[0.2em] text-white/90"
-                    style={{
-                      animation: 'fadeInUp 2s ease-out',
-                      textShadow: '0 0 40px rgba(255,255,255,0.3)'
-                    }}
-                  >
-                    {slide?.title}
-                  </h2>
-                  
-                  {/* Content items staggered */}
-                  <div className="mt-20 space-y-8">
-                    {slide?.content?.map((item, idx) => (
-                      <div 
-                        key={idx}
-                        style={{
-                          animation: `fadeInUp 2s ease-out ${0.3 + idx * 0.2}s backwards`
-                        }}
-                      >
-                        <h3 className="text-2xl md:text-3xl font-light tracking-wide text-white/90">
-                          {item.label}
-                        </h3>
-                        {item.desc && (
-                          <p className="text-lg text-gray-500 mt-2">{item.desc}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Circular light effect */}
-                  <div 
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
-                    style={{
-                      background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
-                      animation: 'pulse 3s ease-in-out infinite',
-                      zIndex: -1
-                    }}
-                  />
-                  
-                  {/* Concentric circles */}
-                  <div 
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-[180px] w-48 h-24"
-                    style={{
-                      animation: 'fadeIn 2s ease-out 0.9s backwards'
-                    }}
-                  >
-                    <svg viewBox="0 0 200 100" className="w-full h-full opacity-60">
-                      <ellipse cx="100" cy="50" rx="90" ry="15" fill="none" stroke="white" strokeWidth="1" opacity="0.4"/>
-                      <ellipse cx="100" cy="50" rx="70" ry="12" fill="none" stroke="white" strokeWidth="1" opacity="0.5"/>
-                      <ellipse cx="100" cy="50" rx="50" ry="9" fill="none" stroke="white" strokeWidth="1" opacity="0.6"/>
-                      <ellipse cx="100" cy="50" rx="30" ry="6" fill="none" stroke="white" strokeWidth="1" opacity="0.7"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
+              // ARTICLES & NEWSLETTER SLIDE - Composant dédié
+              <NewsletterSectionUpdated />
             ) : slide?.id === 'contact' ? (
               // CONTACT SLIDE - Same animation style
               <div className="text-center">
