@@ -4,7 +4,7 @@ import { useGLTF, Environment, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
 function SpaceStationModel() {
-  const { scene } = useGLTF('/models/space_station_3.glb');
+  const { scene } = useGLTF('/models/space_station_3.glb', true); // true pour utiliser draco si nécessaire, ou juste pour forcer le chargement
   const modelRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
