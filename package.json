@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "node api/server.js",
+    "build": "cd api && npm install && cd ../immersive-brain && npm install && npm run build && cd .."
   },
   "repository": {
     "type": "git",
