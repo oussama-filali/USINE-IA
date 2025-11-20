@@ -2,6 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: './api/.env' });
 
@@ -14,6 +19,11 @@ app.use(express.json());
 
 // Servir les fichiers statiques du frontend
 app.use(express.static('../immersive-brain/dist'));
+
+// Route pour servir index.html sur /
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../immersive-brain/dist/index.html'));
+});
 
 // Configuration Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
