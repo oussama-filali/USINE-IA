@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // Servir les fichiers statiques du frontend
-app.use(express.static('../immersive-brain/dist'));
+app.use(express.static(path.join(__dirname, '../immersive-brain/dist')));
 
 // Route pour servir index.html sur /
 app.get('/', (req, res) => {
