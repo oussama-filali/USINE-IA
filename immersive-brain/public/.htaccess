@@ -1,0 +1,28 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Adapter à votre sous-dossier IONOS
+  RewriteBase /USINE-IA/
+
+  # Laisser passer les fichiers et dossiers existants (assets, images, etc.)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # SPA fallback: tout le reste vers index.html
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Types MIME explicites
+AddType application/javascript .js .mjs
+AddType text/css .css
+AddType application/wasm .wasm
+AddType model/gltf-binary .glb
+AddType image/vnd.radiance .hdr
+AddType application/json .json
+
+<IfModule mod_headers.c>
+  # Cache long pour les assets fingerprintés
+  <FilesMatch "\.(js|css|wasm|glb|hdr|png|jpg|jpeg|gif|svg|ico)$">
+    Header set Cache-Control "public, max-age=604800, immutable"
+  </FilesMatch>
+</IfModule>
