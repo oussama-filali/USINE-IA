@@ -1,110 +1,98 @@
 # USINE-IA Immersive Brain
 
-Expérience immersive 3D interactive inspirée de vaalentin.github.io/2015 avec un cerveau holographique, intro animée, et effets audio binauraux.
+**🌐 Site en ligne :** [usineiaclub.store](http://usineiaclub.store)
+
+Expérience immersive 3D interactive présentant USINE-IA et ses agents d'Intelligence Artificielle Émotionnelle.
 
 ## ✨ Fonctionnalités
 
-### 🎬 Intro Immersive
-- Animation de chargement cinématique
-- Barre de progression animée avec effets holographiques
-- Transition fluide vers la scène 3D
-- Effets de grille animée et décorations cyberpunk
+### 🎬 Navigation Immersive
+- Scroll fluide entre les sections (desktop & mobile)
+- Support tactile complet (swipe vertical)
+- Transitions animées entre les slides
+- Indicateurs de navigation adaptatifs
 
-### 🧠 Scène 3D Interactive
-- **Cerveau procédural** généré avec Three.js (IcosahedronGeometry déformée)
-- **Shader holographique** personnalisé avec effet Fresnel et scanlines animées
-- **Double couche** : mesh principal + wireframe pour la profondeur
-- Rotation automatique + accélération au scroll
-- **Parallaxe souris** : rotation X/Z réactive au curseur
-- Bob vertical subtil basé sur la distance de scroll
+### 🚀 Scène 3D Interactive
+- **Station spatiale 3D** en rotation continue
+- Éclairage dynamique avec HDR environment
+- Optimisations mobile (DPR adaptatif, low-power mode)
+- Preload anticipé du modèle 3D
+- Effets de brouillard et dégradés atmosphériques
 
-### ✨ Effets Visuels
-- Nuage de **particules instanciées** (150-220 selon l'écran)
-- Dégradés de fond animés (cyan/magenta/noir)
-- Fog 3D pour la profondeur atmosphérique
-- Antialiasing et DPR adaptatif pour la performance
+### 📱 Responsive Design
+- Interface adaptée desktop/mobile/tablette
+- Hints contextuels (SCROLL/SWIPE)
+- Optimisation des performances par appareil
+- Layout flexible avec Tailwind CSS
 
-### 🎵 Audio Binaural
-- Activation au premier scroll (évite les restrictions autoplay)
-- Deux oscillateurs légèrement désaccordés (140 Hz + 144 Hz)
-- Fade-in progressif sur 4 secondes
-- Indicateur visuel de l'état audio
-
-### 📱 Responsive
-- Adaptation du nombre de particules sur mobile
-- DPR limité à 2x pour les performances
-- Interface tactile optimisée
+### 🎨 Sections
+- **Hero** : Présentation USINE-IA
+- **From Marseille** : Origine du projet (2024)
+- **L'Équipe** : Akram, Oussama, Yannis (animations directionnelles)
+- **Notre Mission** : Vision et valeurs
+- **Nos Agents** : Projets IA (Sophia, Dino Bot, etc.)
+- **Valeurs** : Authenticité, Éthique, Évolution
+- **Articles & Newsletter** : Contenu et abonnement
 
 ## 🚀 Installation & Lancement
 
+### Développement Local
 ```bash
 cd immersive-brain
 npm install
 npm run dev
 ```
-
 Ouvre http://localhost:5173
 
-## 🏗️ Build Production
-
+### Build Production
 ```bash
 npm run build
-npm run preview
+# ou double-clic sur build.bat (Windows)
 ```
 
-## 🎨 Personnalisation
+Les fichiers sont générés dans `dist/`
 
-### Couleurs du Shader
-Édite `BrainScene.tsx` :
-```typescript
-uColorA: { value: new THREE.Color('#00d4ff') }, // Cyan
-uColorB: { value: new THREE.Color('#ff2fb6') }  // Magenta
-```
+## 🏗️ Déploiement
 
-### Particules
-Dans `Particles.tsx`, modifie :
-```typescript
-const count = 220; // Nombre de particules
-```
+Le projet est configuré pour un déploiement à la racine du domaine (`base: '/'`).
 
-### Audio
-Dans `AudioLayer.tsx` :
-```typescript
-const baseFreq = 140; // Fréquence de base
-const beatOffset = 4; // Différence pour effet binaural
-gainRef.current.gain.linearRampToValueAtTime(0.08, ...) // Volume
-```
+### Upload sur serveur
+1. Build le projet : `npm run build`
+2. Upload le contenu de `dist/` à la racine du serveur
+3. Vérifier que `.htaccess` est bien uploadé (fichier caché)
+4. Tester : http://usineiaclub.store
 
-### Durée de l'Intro
-Dans `Intro.tsx` :
-```typescript
-return prev + 2; // Vitesse de chargement (2% par frame)
+### Configuration Apache (.htaccess)
+```apache
+RewriteEngine On
+RewriteBase /
+
+# SPA fallback
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+
+# Types MIME
+AddType application/javascript .js
+AddType text/css .css
+AddType model/gltf-binary .glb
 ```
 
 ## 📁 Structure
 
 ```
 src/
-├── App.tsx                    # App principale avec Canvas
+├── App.tsx                              # App principale avec navigation
 ├── components/
-│   ├── Intro.tsx             # Écran d'intro avec loading
-│   ├── BrainScene.tsx        # Cerveau 3D + shader holographique
-│   ├── Particles.tsx         # Système de particules instanciées
-│   ├── AudioLayer.tsx        # Audio binaural Web Audio API
-│   └── SketchfabViewer.tsx   # (ancien, non utilisé)
-├── hooks/
-│   └── useScrollReactive.ts  # Hook pour vélocité/distance scroll
-└── global.css                # Styles globaux + animations
+│   ├── Intro.tsx                       # Écran de chargement
+│   ├── SpaceStationScene.tsx           # Scène 3D + modèle GLB
+│   ├── ProjectsSection.tsx             # Section Agents IA
+│   ├── NewsletterSectionUpdated.tsx    # Articles + Newsletter
+│   ├── TeamSectionUpdated.tsx          # Équipe (non utilisé)
+│   └── ErrorBoundary.tsx               # Gestion d'erreurs
+├── global.css                           # Styles globaux + animations
+└── main.tsx                            # Entry point
 ```
-
-## 🎯 Inspiration
-
-Style visuel inspiré de **vaalentin.github.io/2015** :
-- Esthétique cyber/holographique
-- Couleurs néon (cyan + magenta)
-- Intro cinématique
-- Interactions fluides scroll/souris
-- Ambiance immersive et méditative
 
 ## 🔧 Technologies
 
@@ -112,27 +100,60 @@ Style visuel inspiré de **vaalentin.github.io/2015** :
 - **Vite** (build ultra-rapide)
 - **Three.js** via React Three Fiber & Drei
 - **Tailwind CSS** (utility-first styling)
-- **Web Audio API** (sons binauraux)
-- **GLSL Shaders** (effets holographiques)
+- **GLTF/GLB** (modèle 3D station spatiale)
+- **Apache** (.htaccess pour SPA routing)
 
-## 🌟 Prochaines Étapes
+## 🌟 Coming Soon
 
-- [ ] Postprocessing (Bloom + Chromatic Aberration)
-- [ ] Gestes mobile (pinch-to-zoom)
-- [ ] Sections scrollables avec contenu
-- [ ] Mode VR (WebXR)
-- [ ] Préchargement lazy des assets audio
-- [ ] Sauvegarde des préférences utilisateur
+### ⏳ Fonctionnalités en développement
 
-## 📝 Notes de Performance
+- [ ] **Newsletter Backend** : API d'inscription fonctionnelle (actuellement en mode démo)
+- [ ] **Articles détaillés** : Pages complètes pour chaque article
+- [ ] **Animation du modèle 3D** : Interactions avancées avec la station spatiale
+- [ ] **Mode sombre/clair** : Thème personnalisable
+- [ ] **Multilingue** : Support FR/EN
+- [ ] **Performances 3D** : Optimisations supplémentaires pour mobiles bas de gamme
+- [ ] **Analytics** : Suivi des visites et interactions
+- [ ] **SEO** : Meta tags et optimisation pour les moteurs de recherche
 
-- Instanced rendering pour les particules (1 draw call)
-- Shaders optimisés (pas de boucles coûteuses)
-- DPR adaptatif selon l'appareil
-- Fog pour limiter la distance de rendu
-- Pas de textures lourdes (tout procédural)
+### 🐛 Correctifs prévus
+
+- [ ] **Newsletter** : Connecter à un backend de production ou service tiers (Formspree, EmailJS)
+- [ ] **Loading 3D** : Indicateur visuel de chargement du modèle
+- [ ] **Gestion d'erreurs** : Fallback si le modèle 3D ne charge pas
+- [ ] **Cache navigateur** : Optimisation du rechargement des assets
+
+## 📝 Notes Techniques
+
+### Navigation
+- Desktop : Molette souris (wheel events)
+- Mobile : Swipe vertical (touch events)
+- Debouncing : 120ms entre les transitions
+- Seuil tactile : 50px minimum pour déclencher
+
+### Optimisations 3D
+- **Desktop** : Antialiasing ON, DPR max 2x, high-performance
+- **Mobile** : Antialiasing OFF, DPR 1x, low-power mode
+- **Preload** : Modèle GLB chargé dès le début du script
+- **Suspense** : Fallback null (pas de spinner pour l'instant)
+
+### CSP (Content Security Policy)
+```
+connect-src 'self' https://cdn.jsdelivr.net https://raw.githack.com
+script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'
+img-src 'self' data: https: blob:
+```
+
+## 🎯 Crédits
+
+**Développé par l'équipe USINE-IA**
+- **Akram TOUMANI** : CTO, Architecture technique
+- **Oussama HALIMA-FILALI** : Développeur, Directeur Artistique
+- **Yannis ROUSSEL** : Chercheur, Sciences Cognitives
+
+**2024** · Marseille, France
 
 ---
 
-**Développé pour USINE-IA** · Expérience immersive de visualisation cérébrale
+**🌐 Site en ligne :** [usineiaclub.store](http://usineiaclub.store)
 

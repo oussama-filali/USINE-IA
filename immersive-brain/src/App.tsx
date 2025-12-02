@@ -48,20 +48,36 @@ export default function App() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastWheelTime = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+  const touchEndY = useRef<number>(0);
 
-  // Auto-advance from 3D showcase to hero - Plus rapide
+  // Auto-advance from 3D showcase to hero
   useEffect(() => {
     if (introComplete && currentSlide === -1) {
       const timer = setTimeout(() => {
         setIsTransitioning(true);
         setCurrentSlide(0);
-        setTimeout(() => setIsTransitioning(false), 800); // Réduit de 1000ms à 800ms
-      }, 3000); // Réduit de 5000ms à 3000ms
+        setTimeout(() => setIsTransitioning(false), 800);
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
   }, [introComplete, currentSlide]);
 
+  // Navigation handler (unifiée pour wheel et touch)
+  const navigateSlides = (direction: 'next' | 'prev') => {
+    if (isTransitioning) return;
+
+    setIsTransitioning(true);
+    if (direction === 'next' && currentSlide < slides.length - 1) {
+      setCurrentSlide(prev => prev + 1);
+    } else if (direction === 'prev' && currentSlide > -1) {
+      setCurrentSlide(prev => prev - 1);
+    }
+    setTimeout(() => setIsTransitioning(false), 800);
+  };
+
+  // Wheel navigation (desktop)
   useEffect(() => {
     if (!introComplete) return;
 
@@ -69,7 +85,7 @@ export default function App() {
       e.preventDefault();
       
       const now = Date.now();
-      if (now - lastWheelTime.current < 120) return; // Réduit de 150ms à 120ms
+      if (now - lastWheelTime.current < 120) return;
       
       if (isTransitioning) return;
       
@@ -77,23 +93,18 @@ export default function App() {
         clearTimeout(wheelTimeoutRef.current);
       }
 
-      const threshold = 8; // Réduit de 10 à 8 pour plus de réactivité
-      
+      const threshold = 8;
       if (Math.abs(e.deltaY) < threshold) return;
 
       lastWheelTime.current = now;
 
       wheelTimeoutRef.current = setTimeout(() => {
-        if (e.deltaY > 0 && currentSlide < slides.length - 1) {
-          setIsTransitioning(true);
-          setCurrentSlide(prev => prev + 1);
-          setTimeout(() => setIsTransitioning(false), 800); // Réduit de 1000ms à 800ms
-        } else if (e.deltaY < 0 && currentSlide > -1) {
-          setIsTransitioning(true);
-          setCurrentSlide(prev => prev - 1);
-          setTimeout(() => setIsTransitioning(false), 800); // Réduit de 1000ms à 800ms
+        if (e.deltaY > 0) {
+          navigateSlides('next');
+        } else if (e.deltaY < 0) {
+          navigateSlides('prev');
         }
-      }, 80); // Réduit de 100ms à 80ms
+      }, 80);
     };
 
     window.addEventListener('wheel', handleWheel, { passive: false });
@@ -103,6 +114,45 @@ export default function App() {
       if (wheelTimeoutRef.current) {
         clearTimeout(wheelTimeoutRef.current);
       }
+    };
+  }, [introComplete, currentSlide, isTransitioning]);
+
+  // Touch navigation (mobile)
+  useEffect(() => {
+    if (!introComplete) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (isTransitioning) return;
+
+      touchEndY.current = e.changedTouches[0].clientY;
+      const deltaY = touchStartY.current - touchEndY.current;
+      const threshold = 50;
+
+      if (Math.abs(deltaY) > threshold) {
+        if (deltaY > 0) {
+          navigateSlides('next');
+        } else {
+          navigateSlides('prev');
+        }
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
   }, [introComplete, currentSlide, isTransitioning]);
 
@@ -147,9 +197,10 @@ export default function App() {
             </p>
           </div>
           
-          {/* Scroll hint - Centré */}
+          {/* Scroll hint - Adapté mobile/desktop */}
           <div className="absolute bottom-8 sm:bottom-10 md:bottom-12 left-1/2 -translate-x-1/2 text-white/30 text-[10px] sm:text-xs tracking-[0.3em] animate-bounce font-light text-center">
-            SCROLL TO CONTINUE
+            <span className="hidden sm:inline">SCROLL TO CONTINUE</span>
+            <span className="sm:hidden">SWIPE TO CONTINUE</span>
           </div>
         </div>
       )}
@@ -588,13 +639,14 @@ export default function App() {
         </div>
       )}
 
-      {/* Scroll hint */}
+      {/* Navigation hint */}
       {currentSlide === 0 && (
         <div 
           className="absolute bottom-12 left-1/2 -translate-x-1/2 text-gray-500 text-xs tracking-widest animate-bounce"
           style={{ zIndex: 3 }}
         >
-          SCROLL
+          <span className="hidden sm:inline">SCROLL</span>
+          <span className="sm:hidden">SWIPE</span>
         </div>
       )}
     </div>

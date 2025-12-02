@@ -1,10 +1,13 @@
-import { useRef, useEffect, Suspense } from 'react';
+import { useRef, useEffect, Suspense, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, Environment, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
+// Preload immédiatement pour chargement anticipé
+useGLTF.preload('/models/space_station_3.glb');
+
 function SpaceStationModel() {
-  const { scene } = useGLTF('/models/space_station_3.glb', true); // true pour utiliser draco si nécessaire, ou juste pour forcer le chargement
+  const { scene } = useGLTF('/models/space_station_3.glb', true);
   const modelRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
@@ -65,18 +68,20 @@ function Scene() {
 }
 
 export default function SpaceStationScene() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
     <div className="absolute inset-0 pointer-events-none">
       <Canvas
         className="pointer-events-none"
         gl={{
-          antialias: true,
+          antialias: !isMobile,
           alpha: true,
-          powerPreference: 'high-performance',
+          powerPreference: isMobile ? 'low-power' : 'high-performance',
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.2,
         }}
-        dpr={[1, 2]}
+        dpr={isMobile ? [1, 1] : [1, 2]}
       >
         <color attach="background" args={['#000000']} />
         <Scene />
@@ -89,5 +94,3 @@ export default function SpaceStationScene() {
     </div>
   );
 }
-
-useGLTF.preload('/models/space_station_3.glb');
