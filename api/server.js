@@ -20,6 +20,9 @@ app.use(express.json());
 // Servir les fichiers statiques du frontend
 app.use(express.static(path.join(__dirname, '../immersive-brain/dist')));
 
+// Favicon placeholder pour éviter les erreurs 502
+app.get('/favicon.ico', (_req, res) => res.status(204).end());
+
 // Route pour servir index.html sur /
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../immersive-brain/dist/index.html'));

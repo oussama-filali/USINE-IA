@@ -56,7 +56,7 @@ function Scene() {
       
       <Suspense fallback={null}>
         <SpaceStationModel />
-        <Environment preset="night" />
+        <Environment files="https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/dikhololo_night_1k.hdr" />
       </Suspense>
 
       <fog attach="fog" args={['#000000', 15, 40]} />
