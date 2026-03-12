@@ -1,19 +1,12 @@
 import React, { useState } from 'react';
 
-interface Article {
-  title: string;
-  excerpt: string;
-  date: string;
-  author: string;
-  category: string;
-  icon: string;
-}
-
 export default function NewsletterSectionUpdated() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const apiBaseUrl = (import.meta as any).env?.VITE_API_BASE_URL || '';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +16,7 @@ export default function NewsletterSectionUpdated() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/newsletter/subscribe', {
+      const response = await fetch(`${apiBaseUrl}/api/newsletter/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,39 +34,12 @@ export default function NewsletterSectionUpdated() {
         setError(data.error || 'Une erreur est survenue');
       }
     } catch (err) {
-      setError('Erreur de connexion. Vérifiez que le backend est lancé.');
+      setError('Erreur de connexion. Réessayez dans un instant.');
       console.error('Newsletter error:', err);
     } finally {
       setLoading(false);
     }
   };
-
-  const articles: Article[] = [
-    {
-      title: "L'Ingénierie de Prompt Avancée",
-      excerpt: "Comment les principes de la PNL sont codés dans l'ADN de nos IA pour créer des interactions authentiques.",
-      date: "Nov 2024",
-      author: "Yannis Roussel",
-      category: "Technique",
-      icon: "🧬"
-    },
-    {
-      title: "Résoudre la Monotonie Conversationnelle de Sophia",
-      excerpt: "Les défis techniques et émotionnels pour créer une compagne IA capable de variété et d'adaptation naturelles.",
-      date: "Oct 2024",
-      author: "Akram Toumani",
-      category: "Innovation",
-      icon: "🎵"
-    },
-    {
-      title: "RAG et Fiabilité Augmentée",
-      excerpt: "Notre engagement éthique pour garantir que nos Agents ne vous donnent jamais de mauvais conseils.",
-      date: "Sep 2024",
-      author: "Yannis Roussel",
-      category: "Éthique",
-      icon: "🛡️"
-    }
-  ];
 
   return (
     <div className="text-center">
@@ -86,44 +52,27 @@ export default function NewsletterSectionUpdated() {
             textShadow: '0 0 40px rgba(255,255,255,0.3)'
           }}
         >
-          Articles
+          Rejoignez le Club USINE IA
         </h2>
 
-        {/* Articles avec animations décalées - tous centrés et compacts */}
-        <div className="max-w-4xl mx-auto mb-8 space-y-6">
-          {articles.map((article, idx) => (
-            <div 
-              key={idx}
-              className="space-y-1"
-              style={{
-                animation: `fadeInUp 2s ease-out ${0.3 + idx * 0.2}s backwards`
-              }}
-            >
-              <h3 className="text-lg md:text-xl font-light text-white/90">
-                {article.title}
-              </h3>
-              <p className="text-xs text-gray-500">{article.date} • {article.author}</p>
-              <p className="text-sm text-gray-400 max-w-2xl mx-auto">
-                {article.excerpt}
-              </p>
-            </div>
-          ))}
-        </div>
+        <p
+          className="text-sm md:text-base text-gray-400/90 font-light max-w-2xl mx-auto mb-10"
+          style={{
+            animation: 'fadeInUp 2s ease-out 0.15s backwards'
+          }}
+        >
+          Pas de spam. Juste de la haute stratégie. Recevez nos études de cas et nos prompts exclusifs.
+        </p>
 
         {/* Newsletter dans un bloc compact (comme ProjectsSection) */}
         <div 
           className="max-w-2xl mx-auto"
           style={{
-            animation: 'fadeInUp 2s ease-out 1.2s backwards'
+            animation: 'fadeInUp 2s ease-out 0.35s backwards'
           }}
         >
           <div className="border border-white/10 bg-white/5 backdrop-blur-sm p-6 hover:border-white/20 transition-all duration-300">
-            <h3 className="text-xl md:text-2xl font-light text-white/90 mb-1">
-              Newsletter
-            </h3>
-            <p className="text-gray-400 mb-4 text-xs">
-              Restez informé de nos derniers articles
-            </p>
+            <h3 className="text-xl md:text-2xl font-light text-white/90 mb-2">Newsletter</h3>
 
             <form onSubmit={handleSubmit} className="flex gap-2 mb-2">
               <input
@@ -138,9 +87,9 @@ export default function NewsletterSectionUpdated() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 border border-white/20 text-white text-sm hover:bg-white/10 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-indigo-600/90 hover:bg-indigo-600 text-white text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? '...' : 'OK'}
+                {loading ? '...' : "S'inscrire"}
               </button>
             </form>
 

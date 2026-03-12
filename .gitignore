@@ -117,3 +117,6 @@ Thumbs.db
 *.temp
 
 /generated/prisma
+
+# Notes internes (ne pas committer)
+docs/SECURITE.md

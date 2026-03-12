@@ -23,6 +23,7 @@ html, body {
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 300;
+ 
   letter-spacing: -0.02em;
 }
 
@@ -102,6 +103,161 @@ h1, h2, h3, h4, h5, h6 {
   to {
     height: 100%;
   }
+}
+
+/* HERO letter flip (subtle, coherent with existing minimal UI) */
+@keyframes uiFlipIn {
+  0% {
+    opacity: 0;
+    transform: translateY(0.35em) rotateX(88deg) rotateY(-12deg);
+    filter: blur(6px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg) rotateY(0deg);
+    filter: blur(0px);
+  }
+}
+
+@keyframes uiGlitchFlicker {
+  0%, 100% { opacity: 0; transform: translateX(0); }
+  10% { opacity: 0.18; transform: translateX(1px); }
+  12% { opacity: 0; }
+  45% { opacity: 0.14; transform: translateX(-1px); }
+  47% { opacity: 0; }
+}
+
+.ui-flip {
+  perspective: 800px;
+  transform-style: preserve-3d;
+  display: inline-block;
+}
+
+.ui-flip-word {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.ui-flip-space {
+  display: inline-block;
+  width: 0.32em;
+}
+
+.ui-flip-char {
+  display: inline-block;
+  transform-origin: 50% 70%;
+  animation: uiFlipIn 900ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  backface-visibility: hidden;
+  color: transparent;
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  will-change: transform, opacity, filter;
+}
+
+.ui-glitch {
+  position: relative;
+}
+
+.ui-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: rgba(255, 255, 255, 0.5);
+  mix-blend-mode: screen;
+  clip-path: inset(35% 0 45% 0);
+  opacity: 0;
+  animation: uiGlitchFlicker 2.6s steps(2, end) infinite;
+  pointer-events: none;
+}
+
+/* "cœur" → mini modèle 3D (HERO) */
+@keyframes hmWordOut {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-0.04em) scale(0.985); }
+}
+
+@keyframes hmReplacementIn {
+  0% { opacity: 0; transform: translateY(0.03em) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.heart-morph {
+  --hm-delay: 1800ms;
+  --hm-wordout: 650ms;
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: visible;
+
+  /* Use the same gradient as the surrounding title */
+  color: transparent;
+  background: linear-gradient(90deg, rgb(129 140 248), rgb(192 132 252), rgb(236 72 153));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heart-morph-sizer {
+  visibility: hidden;
+  display: inline-block;
+}
+
+.heart-morph--model .heart-morph-sizer {
+  padding-right: 2.15em;
+}
+
+.heart-morph-word {
+  position: absolute;
+  inset: 0;
+  display: inline-block;
+  text-align: left;
+  pointer-events: none;
+
+  color: transparent;
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  animation: hmWordOut var(--hm-wordout) cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  animation-delay: var(--hm-delay);
+  transform-origin: 50% 70%;
+}
+
+.heart-morph-replacement {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.heart-morph-model {
+  opacity: 0;
+  animation: hmReplacementIn 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  animation-delay: calc(var(--hm-delay) + var(--hm-wordout));
+}
+
+.heart-morph-model-inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3.75em;
+  height: 3.75em;
+  transform: translate(-50%, -52%);
+}
+
+.heart-morph-model-inner canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
 }
 
 /* Responsive utilities */

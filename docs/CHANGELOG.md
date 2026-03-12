@@ -150,4 +150,4 @@ dist/
 ---
 
 **🌐 Site actuel** : [usineiaclub.store](http://usineiaclub.store)
-**📅 Dernière mise à jour** : 2 décembre 2024
+**📅 Dernière mise à jour** : 12 Mars 2026

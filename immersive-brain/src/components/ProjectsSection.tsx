@@ -7,23 +7,31 @@ interface Project {
   status: 'live' | 'coming';
   link?: string;
   icon: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  ctaAction?: 'navigate';
+  ctaTargetId?: string;
 }
 
 const projects: Project[] = [
   {
     name: 'Sophia',
-    tagline: "L'Âme Sœur et Confidente",
-    description: "La révolution de l'Intelligence Émotionnelle Augmentée. Sophia met fin à la conversation robotique et vous offre une écoute authentique, sans jugement. Son Protocole d'Écoute Structurée (PEC) décrypte vos schémas psychologiques pour vous aider à devenir acteur de votre propre vie.",
+    tagline: "IA Émotionnelle",
+    description: "Sophia n'est pas un chatbot. C'est une mémoire expérientielle : elle détecte la détresse, structure l'écoute et ne juge jamais.",
     status: 'live',
-    link: 'https://t.me/Spohia_bot',
+    link: 'https://t.me/Sophia_bot',
+    ctaLabel: 'Tester Sophia sur Telegram',
+    ctaHref: 'https://t.me/Sophia_bot',
     icon: '💖'
   },
   {
     name: 'Dino Bot',
-    tagline: 'Le Gardien de la Vérité Éducative',
-    description: "Transforme la vérité en jeu ! Dino Bot met fin à la désinformation en ligne pour les jeunes. Il fournit des réponses fiables, éthiques et adaptées à l'âge, sans jamais inventer un fait. Un filtre de sécurité éthique pour protéger les esprits curieux.",
-    status: 'live',
-    link: 'https://fact-checker-xn9m.onrender.com/',
+    tagline: 'Fact-checking enfants (6–12 ans)',
+    description: "L'éducation aux médias pour les 6–12 ans : vérification des faits et langage adapté.",
+    status: 'coming',
+    ctaLabel: "S'inscrire à la Beta",
+    ctaAction: 'navigate',
+    ctaTargetId: 'newsletter',
     icon: '🦖'
   },
   {
@@ -34,7 +42,12 @@ const projects: Project[] = [
     icon: '⚖️'
   }
 ];
-export default function ProjectsSection() {
+
+type ProjectsSectionProps = {
+  onNavigateToId?: (id: string) => void;
+};
+
+export default function ProjectsSection({ onNavigateToId }: ProjectsSectionProps) {
   return (
     <div className="relative w-full h-full flex items-center justify-center px-4 md:px-6">
       <div className="w-full max-w-6xl">
@@ -56,7 +69,7 @@ export default function ProjectsSection() {
             animation: 'fadeInUp 2s ease-out 0.3s backwards'
           }}
         >
-          Une Révolution du Dialogue
+          Show, don’t tell.
         </p>
 
         {/* Grid des projets */}
@@ -99,6 +112,34 @@ export default function ProjectsSection() {
                 {project.description}
               </p>
 
+              {/* CTA explicite */}
+              {project.ctaLabel && (
+                <div className="mt-4">
+                  {project.ctaAction === 'navigate' && project.ctaTargetId && onNavigateToId ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onNavigateToId(project.ctaTargetId!);
+                      }}
+                      className="w-full px-4 py-2 border border-white/20 text-white/80 text-[10px] md:text-xs tracking-wider hover:bg-white/10 transition-all duration-300"
+                    >
+                      {project.ctaLabel}
+                    </button>
+                  ) : project.ctaHref ? (
+                    <a
+                      href={project.ctaHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="block w-full text-center px-4 py-2 border border-white/20 text-white/80 text-[10px] md:text-xs tracking-wider hover:bg-white/10 transition-all duration-300"
+                    >
+                      {project.ctaLabel}
+                    </a>
+                  ) : null}
+                </div>
+              )}
+
               {/* Hover indicator */}
               {project.status === 'live' && (
                 <div className="mt-3 flex items-center gap-2 text-[10px] text-white/40 group-hover:text-white/70 transition-colors duration-300">
@@ -129,7 +170,7 @@ export default function ProjectsSection() {
             ⚙️ La Fiabilité Augmentée (RAG)
           </h4>
           <p className="text-[10px] md:text-xs text-gray-400/80 font-light leading-relaxed">
-            Le RAG garantit que nos agents ne mentent jamais. Avec ChromaDB, nous offrons des analyses basées sur des données vérifiées.
+            RAG + mémoire vectorielle : vos documents deviennent un cerveau consultable, traçable et fiable.
           </p>
         </div>
 

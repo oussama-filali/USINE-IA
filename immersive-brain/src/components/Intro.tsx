@@ -1,43 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useProgress } from '@react-three/drei';
 
 interface IntroProps {
   onComplete: () => void;
 }
 
 export default function Intro({ onComplete }: IntroProps) {
+  const { progress: loaderProgress, active } = useProgress();
   const [progress, setProgress] = useState(0);
   const [textVisible, setTextVisible] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const startTimeRef = useRef<number>(Date.now());
+  const completedRef = useRef(false);
+
+  const complete = () => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    setFadeOut(true);
+    setTimeout(onComplete, 650);
+  };
+
+  const displayProgress = useMemo(() => {
+    const p = Number.isFinite(loaderProgress) ? loaderProgress : 0;
+    return Math.max(0, Math.min(100, Math.round(p)));
+  }, [loaderProgress]);
 
   useEffect(() => {
-    // Show text immediately for faster experience
     setTextVisible(true);
-    
-    // Faster loading progress (reduced from 40ms to 25ms, increased increment from 2 to 3)
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return prev + 3; // Faster loading
-      });
-    }, 25); // Faster interval
-
-    return () => {
-      clearInterval(progressInterval);
-    };
   }, []);
 
+  // Smooth displayed progress towards real loader progress
   useEffect(() => {
-    if (progress === 100) {
-      // Reduced delay for faster transition
-      setTimeout(() => {
-        setFadeOut(true);
-        setTimeout(onComplete, 800); // Faster fade out
-      }, 300); // Reduced from 500ms
-    }
-  }, [progress, onComplete]);
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        const target = displayProgress;
+        if (prev >= target) return prev;
+        return Math.min(target, prev + 2);
+      });
+    }, 30);
+    return () => clearInterval(interval);
+  }, [displayProgress]);
+
+  useEffect(() => {
+    if (completedRef.current) return;
+
+    // Pour éviter une intro trop longue (HDR / réseau), on sort dès ~85%.
+    // Le reste se charge derrière avec le fallback 3D.
+    const minVisibleMs = 850;
+    const elapsed = Date.now() - startTimeRef.current;
+    const ready = progress >= 85 || (!active && progress >= 100);
+    if (!ready || elapsed < minVisibleMs) return;
+
+    const t = setTimeout(() => complete(), 120);
+    return () => clearTimeout(t);
+  }, [active, progress]);
+
+  // Fail-safe: ne jamais rester bloqué sur l'intro (réseau, HDR externe, loader browser-specific)
+  useEffect(() => {
+    if (completedRef.current) return;
+    const maxWaitMs = 5500;
+    const t = setTimeout(() => complete(), maxWaitMs);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <div

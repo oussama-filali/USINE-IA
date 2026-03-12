@@ -1,10 +1,38 @@
-import { useRef, useEffect, Suspense, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, Environment, PerspectiveCamera } from '@react-three/drei';
+import { useEffect, useMemo, useRef, Suspense } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Environment, PerspectiveCamera, Preload, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
+import Particles from './Particles';
 
 // Preload immédiatement pour chargement anticipé
 useGLTF.preload('/models/space_station_3.glb');
+
+type CameraPose = {
+  position: [number, number, number];
+  lookAt: [number, number, number];
+};
+
+function getPoseForSlide(slideIndex: number): CameraPose {
+  // -1 = showcase 3D. Les autres indices suivent l'ordre des slides de App.
+  switch (slideIndex) {
+    case -1:
+      return { position: [0, 5, 20], lookAt: [0, 0, 0] };
+    case 0: // HERO
+      return { position: [0, 4, 16], lookAt: [0, 0, 0] };
+    case 1: // SERVICES
+      return { position: [6, 2.5, 14], lookAt: [0, 0, 0] };
+    case 2: // FORMATIONS
+      return { position: [-6, 3, 13], lookAt: [0, 0, 0] };
+    case 3: // AGENTS (immersion plus proche “dans les fragments”)
+      return { position: [2.5, 1.6, 8.5], lookAt: [0, 0.2, 0] };
+    case 4: // NEWSLETTER
+      return { position: [-2.5, 4.5, 12], lookAt: [0, 0, 0] };
+    case 5: // CONTACT
+      return { position: [0, 2.2, 10.5], lookAt: [0, 0.2, 0] };
+    default:
+      return { position: [0, 5, 15], lookAt: [0, 0, 0] };
+  }
+}
 
 function SpaceStationModel() {
   const { scene } = useGLTF('/models/space_station_3.glb', true);
@@ -41,33 +69,81 @@ function SpaceStationModel() {
   );
 }
 
-function Scene() {
-  const { camera } = useThree();
+function LoadingGeometry() {
+  const groupRef = useRef<THREE.Group>(null);
 
+  useFrame((state) => {
+    if (!groupRef.current) return;
+    const t = state.clock.elapsedTime;
+    groupRef.current.rotation.y = t * 0.2;
+    groupRef.current.rotation.x = t * 0.06;
+  });
+
+  return (
+    <group ref={groupRef}>
+      <mesh position={[0, 0, 0]}>
+        <torusGeometry args={[2.6, 0.08, 16, 96]} />
+        <meshStandardMaterial color={'#ffffff'} transparent opacity={0.25} metalness={0.6} roughness={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+function CameraRig({ slideIndex }: { slideIndex: number }) {
+  const cameraRef = useRef<THREE.PerspectiveCamera>(null);
+  const position = useMemo(() => new THREE.Vector3(), []);
+  const lookAt = useMemo(() => new THREE.Vector3(), []);
+  const targetPos = useMemo(() => new THREE.Vector3(), []);
+  const targetLook = useMemo(() => new THREE.Vector3(), []);
+
+  useFrame(() => {
+    const cam = cameraRef.current;
+    if (!cam) return;
+
+    const pose = getPoseForSlide(slideIndex);
+    targetPos.set(pose.position[0], pose.position[1], pose.position[2]);
+    targetLook.set(pose.lookAt[0], pose.lookAt[1], pose.lookAt[2]);
+
+    position.copy(cam.position);
+    position.lerp(targetPos, 0.06);
+    cam.position.copy(position);
+
+    lookAt.copy(targetLook);
+    cam.lookAt(lookAt);
+    cam.updateProjectionMatrix();
+  });
+
+  return <PerspectiveCamera ref={cameraRef} makeDefault position={[0, 5, 15]} fov={60} />;
+}
+
+function Scene({ slideIndex }: { slideIndex: number }) {
   useEffect(() => {
-    camera.position.set(0, 5, 15);
-  }, [camera]);
+    THREE.Cache.enabled = true;
+  }, []);
 
   return (
     <>
-      <PerspectiveCamera makeDefault position={[0, 5, 15]} fov={60} />
+      <CameraRig slideIndex={slideIndex} />
       
       <ambientLight intensity={0.3} />
       <directionalLight position={[10, 10, 5]} intensity={1} color="#ffffff" />
       <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#4444ff" />
       <pointLight position={[0, 10, 0]} intensity={1} color="#ff66ff" distance={30} decay={2} />
+
+      <Particles />
       
-      <Suspense fallback={null}>
+      <Suspense fallback={<LoadingGeometry />}>
         <SpaceStationModel />
         <Environment files="https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/dikhololo_night_1k.hdr" />
+        <Preload all />
       </Suspense>
 
-      <fog attach="fog" args={['#000000', 15, 40]} />
+      <fog attach="fog" args={['#000000', 8, 45]} />
     </>
   );
 }
 
-export default function SpaceStationScene() {
+export default function SpaceStationScene({ slideIndex = -1 }: { slideIndex?: number }) {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
@@ -84,7 +160,7 @@ export default function SpaceStationScene() {
         dpr={isMobile ? [1, 1] : [1, 2]}
       >
         <color attach="background" args={['#000000']} />
-        <Scene />
+        <Scene slideIndex={slideIndex} />
       </Canvas>
 
       <div className="absolute inset-0 pointer-events-none">
