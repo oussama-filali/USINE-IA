@@ -29,6 +29,8 @@ function getPoseForSlide(slideIndex: number): CameraPose {
       return { position: [-2.5, 4.5, 12], lookAt: [0, 0, 0] };
     case 5: // CONTACT
       return { position: [0, 2.2, 10.5], lookAt: [0, 0.2, 0] };
+    case 6: // PLAYGROUND
+      return { position: [0, 6, 18], lookAt: [0, 0, 0] };
     default:
       return { position: [0, 5, 15], lookAt: [0, 0, 0] };
   }
@@ -44,9 +46,11 @@ function SpaceStationModel() {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
           if (mesh.material) {
-            (mesh.material as THREE.MeshStandardMaterial).metalness = 0.9;
-            (mesh.material as THREE.MeshStandardMaterial).roughness = 0.2;
-            (mesh.material as THREE.MeshStandardMaterial).envMapIntensity = 1.5;
+            (mesh.material as THREE.MeshStandardMaterial).metalness = 0.95;
+            (mesh.material as THREE.MeshStandardMaterial).roughness = 0.15;
+            (mesh.material as THREE.MeshStandardMaterial).envMapIntensity = 2;
+            (mesh.material as THREE.MeshStandardMaterial).emissive = new THREE.Color(0x0a0a1a);
+            (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.3;
           }
         }
       });
@@ -125,10 +129,11 @@ function Scene({ slideIndex }: { slideIndex: number }) {
     <>
       <CameraRig slideIndex={slideIndex} />
       
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[10, 10, 5]} intensity={1} color="#ffffff" />
-      <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#4444ff" />
-      <pointLight position={[0, 10, 0]} intensity={1} color="#ff66ff" distance={30} decay={2} />
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[10, 10, 5]} intensity={2} color="#88ccff" />
+      <directionalLight position={[-10, -10, -5]} intensity={1.2} color="#aa88ff" />
+      <pointLight position={[0, 10, 0]} intensity={1.8} color="#ff88ff" distance={35} decay={2} />
+      <pointLight position={[5, 5, 10]} intensity={1.2} color="#00ffff" distance={25} decay={2} />
 
       <Particles />
       
@@ -138,7 +143,7 @@ function Scene({ slideIndex }: { slideIndex: number }) {
         <Preload all />
       </Suspense>
 
-      <fog attach="fog" args={['#000000', 8, 45]} />
+      <fog attach="fog" args={['#000000', 12, 50]} />
     </>
   );
 }
@@ -155,7 +160,7 @@ export default function SpaceStationScene({ slideIndex = -1 }: { slideIndex?: nu
           alpha: true,
           powerPreference: isMobile ? 'low-power' : 'high-performance',
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.2,
+          toneMappingExposure: 1.8,
         }}
         dpr={isMobile ? [1, 1] : [1, 2]}
       >
@@ -164,8 +169,8 @@ export default function SpaceStationScene({ slideIndex = -1 }: { slideIndex?: nu
       </Canvas>
 
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-radial from-purple-600/10 via-transparent to-black opacity-60" />
-        <div className="absolute inset-0 bg-gradient-radial from-cyan-600/5 via-transparent to-transparent opacity-40" />
+        <div className="absolute inset-0 bg-gradient-radial from-purple-600/8 via-transparent to-black opacity-40" />
+        <div className="absolute inset-0 bg-gradient-radial from-cyan-600/6 via-transparent to-transparent opacity-30" />
       </div>
     </div>
   );
