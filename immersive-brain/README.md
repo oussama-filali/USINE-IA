@@ -151,7 +151,7 @@ img-src 'self' data: https: blob:
 - **Oussama HALIMA-FILALI** : Développeur, Directeur Artistique
 - **Yannis ROUSSEL** : Chercheur, Sciences Cognitives
 
-**2024** · Marseille, France
+**2026** · Marseille, France
 
 ---
 
