@@ -4,6 +4,8 @@ import Intro from './components/Intro';
 import ProjectsSection from './components/ProjectsSection';
 import NewsletterSectionUpdated from './components/NewsletterSectionUpdated';
 import HeartMorph from './components/HeartMorph';
+import FlipText from './components/FlipText';
+import SpaceBoiSection from './components/SpaceBoiSection';
 
 const slides = [
   { id: 'hero', title: 'Hero' },
@@ -11,7 +13,8 @@ const slides = [
   { id: 'formations', title: 'Transmission de Savoir' },
   { id: 'agents', title: 'Sophia & Dino' },
   { id: 'newsletter', title: 'Newsletter' },
-  { id: 'contact', title: 'Contact' }
+  { id: 'contact', title: 'Contact' },
+  { id: 'playground', title: 'Playground' }
 ];
 
 export default function App() {
@@ -51,6 +54,9 @@ export default function App() {
     setIsTransitioning(true);
     if (direction === 'next' && currentSlide < slides.length - 1) {
       setCurrentSlide(prev => prev + 1);
+    } else if (direction === 'next' && currentSlide === slides.length - 1) {
+      // Dernière slide (playground) -> retour au début (slide 0)
+      setCurrentSlide(0);
     } else if (direction === 'prev' && currentSlide > -1) {
       setCurrentSlide(prev => prev - 1);
     }
@@ -137,12 +143,17 @@ export default function App() {
   }, [introComplete, currentSlide, isTransitioning]);
 
   const slide = currentSlide >= 0 ? slides[currentSlide] : null;
+  const isPlayground = slide?.id === 'playground';
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black text-white">
       {/* 3D Background - ALWAYS VISIBLE */}
-      <div className="absolute inset-0" style={{ zIndex: 0 }}>
-        <SpaceStationScene slideIndex={currentSlide} />
+      <div
+        className="absolute inset-0 transition-opacity duration-500"
+        style={{ zIndex: 0, opacity: introComplete ? 1 : 0 }}
+        aria-hidden={!introComplete}
+      >
+        {!isPlayground && <SpaceStationScene slideIndex={currentSlide} />}
       </div>
 
       {/* Intro overlay (attend le vrai chargement) */}
@@ -153,7 +164,7 @@ export default function App() {
         className="absolute inset-0 bg-black transition-opacity duration-700 ease-out"
         style={{ 
           zIndex: 1,
-          opacity: currentSlide === -1 ? 0 : currentSlide === 0 ? 0.3 : 0.75
+          opacity: currentSlide === -1 ? 0 : currentSlide === 0 ? 0.2 : 0.45
         }}
       />
 
@@ -180,20 +191,32 @@ export default function App() {
 
       {/* Content Layer - Slides 0+ */}
       {introComplete && currentSlide >= 0 && (
-        <div className="absolute inset-0 flex items-center justify-center px-6" style={{ zIndex: 2 }}>
-          <div 
-            className="w-full max-w-4xl"
-            style={{ 
+        isPlayground ? (
+          <div
+            className="absolute inset-0"
+            style={{
+              zIndex: 2,
               opacity: isTransitioning ? 0 : 1,
-              transform: isTransitioning ? 'translateY(20px)' : 'translateY(0)',
-              transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
+              transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
             }}
           >
-            {slide?.id === 'hero' ? (
+            <SpaceBoiSection />
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center px-6" style={{ zIndex: 2 }}>
+            <div 
+              className="w-full max-w-4xl"
+              style={{ 
+                opacity: isTransitioning ? 0 : 1,
+                transform: isTransitioning ? 'translateY(20px)' : 'translateY(0)',
+                transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+            >
+              {slide?.id === 'hero' ? (
               // HERO SLIDE
               <div className="text-center">
                 <h1 className="text-3xl sm:text-4xl md:text-6xl font-light mb-6 leading-[1.18]">
-                  L'Intelligence Artificielle{' '}
+                  L'<FlipText text="Intelligence" delayMs={800} /> <FlipText text="Artificielle" delayMs={1200} />{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
                     doit avoir du <HeartMorph delayMs={1800} word="cœur" modelUrl="/models/robot_playground.glb" />
                   </span>
@@ -321,9 +344,10 @@ export default function App() {
                   contact@usineiaclub.store
                 </a>
               </div>
-            ) : null}
+              ) : null}
+            </div>
           </div>
-        </div>
+        )
       )}
 
       {/* Slide indicator */}
