@@ -9,9 +9,9 @@ import SpaceBoiSection from './components/SpaceBoiSection';
 
 const slides = [
   { id: 'hero', title: 'Hero' },
+  { id: 'agents', title: 'Sophia & Dino' },
   { id: 'services', title: 'Notre Expertise' },
   { id: 'formations', title: 'Transmission de Savoir' },
-  { id: 'agents', title: 'Sophia & Dino' },
   { id: 'newsletter', title: 'Newsletter' },
   { id: 'contact', title: 'Contact' },
   { id: 'playground', title: 'Playground' }
@@ -144,6 +144,7 @@ export default function App() {
 
   const slide = currentSlide >= 0 ? slides[currentSlide] : null;
   const isPlayground = slide?.id === 'playground';
+  const isAgents = slide?.id === 'agents';
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black text-white">
@@ -201,6 +202,17 @@ export default function App() {
             }}
           >
             <SpaceBoiSection />
+          </div>
+        ) : isAgents ? (
+          <div
+            className="absolute inset-0"
+            style={{
+              zIndex: 2,
+              opacity: isTransitioning ? 0 : 1,
+              transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+          >
+            <ProjectsSection onNavigateToId={goToSlideId} />
           </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center px-6" style={{ zIndex: 2 }}>
@@ -325,8 +337,6 @@ export default function App() {
                   </div>
                 </div>
               </div>
-            ) : slide?.id === 'agents' ? (
-              <ProjectsSection onNavigateToId={goToSlideId} />
             ) : slide?.id === 'newsletter' ? (
               <NewsletterSectionUpdated />
             ) : slide?.id === 'contact' ? (

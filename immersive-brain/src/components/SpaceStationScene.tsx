@@ -19,12 +19,12 @@ function getPoseForSlide(slideIndex: number): CameraPose {
       return { position: [0, 5, 20], lookAt: [0, 0, 0] };
     case 0: // HERO
       return { position: [0, 4, 16], lookAt: [0, 0, 0] };
-    case 1: // SERVICES
-      return { position: [6, 2.5, 14], lookAt: [0, 0, 0] };
-    case 2: // FORMATIONS
-      return { position: [-6, 3, 13], lookAt: [0, 0, 0] };
-    case 3: // AGENTS (immersion plus proche “dans les fragments”)
+    case 1: // AGENTS (immersion plus proche “dans les fragments”)
       return { position: [2.5, 1.6, 8.5], lookAt: [0, 0.2, 0] };
+    case 2: // SERVICES
+      return { position: [6, 2.5, 14], lookAt: [0, 0, 0] };
+    case 3: // FORMATIONS
+      return { position: [-6, 3, 13], lookAt: [0, 0, 0] };
     case 4: // NEWSLETTER
       return { position: [-2.5, 4.5, 12], lookAt: [0, 0, 0] };
     case 5: // CONTACT
