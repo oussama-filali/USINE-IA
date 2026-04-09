@@ -13,6 +13,10 @@ type AgentsSectionProps = {
 export default function AgentsSection({ onNavigateToId, orbitRef }: AgentsSectionProps) {
   const dinoModelUrl = useMemo(() => agentProjects.find((p) => p.id === 'dino')?.modelUrl ?? null, []);
   const [dinoModelOk, setDinoModelOk] = useState<boolean>(false);
+  const fallbackLogoUrl = useMemo(
+    () => `${import.meta.env.BASE_URL}images/logo-minimalist-usine-ia.png`,
+    []
+  );
 
   useEffect(() => {
     if (!dinoModelUrl) return;
@@ -103,6 +107,9 @@ export default function AgentsSection({ onNavigateToId, orbitRef }: AgentsSectio
             className="relative z-10 w-full max-w-[620px] mx-auto select-none overflow-visible"
             style={{
               perspective: `${metricsRef.current.perspective}px`,
+              // Mobile: prioritize the carousel drag over page/slide gestures.
+              // (We still allow vertical gestures outside of this stage.)
+              touchAction: 'none',
             }}
             onPointerDown={onStagePointerDown}
             onPointerMove={onAnyPointerMove}
@@ -149,9 +156,11 @@ export default function AgentsSection({ onNavigateToId, orbitRef }: AgentsSectio
                         transformStyle: 'preserve-3d',
                         willChange: 'transform, filter, opacity',
                         transition: 'none',
+                        // Ensure the actual touch target also opts out of browser panning.
+                        touchAction: 'none',
                       }}
                       onPointerDown={(e) => {
-                        if (e.button !== 0) return;
+                          if (e.pointerType === 'mouse' && e.button !== 0) return;
                         beginDrag(e, e.currentTarget);
                       }}
                       onPointerMove={onAnyPointerMove}
@@ -235,7 +244,7 @@ export default function AgentsSection({ onNavigateToId, orbitRef }: AgentsSectio
                                 loading="lazy"
                                 onError={(e) => {
                                   e.currentTarget.onerror = null;
-                                  e.currentTarget.src = '/images/logo-usine-ia.png';
+                                  e.currentTarget.src = fallbackLogoUrl;
                                 }}
                               />
                             </div>

@@ -5,7 +5,7 @@ import { Environment, PerspectiveCamera, Preload, useGLTF } from '@react-three/d
 import * as THREE from 'three';
 import Particles from './Particles';
 
-const STATION_GLB_URL = '/models/space_station_3.glb';
+const STATION_GLB_URL = `${import.meta.env.BASE_URL}models/space_station_3.glb`;
 const STATION_HDR_URL =
   'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/dikhololo_night_1k.hdr';
 

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAnimations, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const MODEL_URL = '/models/space_boi.glb';
+const MODEL_URL = `${import.meta.env.BASE_URL}models/space_boi.glb`;
 
 type GLTFResult = {
 	scene: THREE.Group;

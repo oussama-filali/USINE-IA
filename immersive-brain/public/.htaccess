@@ -1,7 +1,12 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  # Déploiement à la racine du domaine
-  RewriteBase /
+  # IMPORTANT:
+  # - Ne pas forcer RewriteBase ici: si l'app est servie dans un sous-dossier,
+  #   un RewriteBase '/' peut casser des chemins (images/models) et des rewrites.
+
+  # Ne JAMAIS réécrire les appels API vers index.html.
+  # Si un backend est proxy (ou si /api n'existe pas), on veut une vraie réponse API (ou 404), pas du HTML.
+  RewriteRule ^api(/|$) - [L]
 
   # Laisser passer les fichiers et dossiers existants (assets, images, etc.)
   RewriteCond %{REQUEST_FILENAME} -f [OR]
@@ -21,8 +26,14 @@ AddType image/vnd.radiance .hdr
 AddType application/json .json
 
 <IfModule mod_headers.c>
-  # Cache long pour les assets fingerprintés
-  <FilesMatch "\.(js|css|wasm|glb|hdr|png|jpg|jpeg|gif|svg|ico)$">
+  # Cache long uniquement pour les fichiers fingerprintés (JS/CSS/wasm).
+  # Les images/models dans /images et /models ne sont pas fingerprintés: éviter 'immutable'
+  # pour ne pas rester bloqué sur d'anciens fichiers après un redeploy.
+  <FilesMatch "\.(js|mjs|css|wasm)$">
     Header set Cache-Control "public, max-age=604800, immutable"
+  </FilesMatch>
+
+  <FilesMatch "\.(glb|hdr|png|jpg|jpeg|gif|svg|ico|json)$">
+    Header set Cache-Control "public, max-age=3600"
   </FilesMatch>
 </IfModule>

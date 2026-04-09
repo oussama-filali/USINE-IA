@@ -283,7 +283,7 @@ export default function App() {
                 <h1 className="text-3xl sm:text-4xl md:text-6xl font-light mb-6 leading-[1.18]">
                   L'<FlipText text="Intelligence" delayMs={800} /> <FlipText text="Artificielle" delayMs={1200} />{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
-                    doit avoir du <HeartMorph delayMs={1800} word="cœur" modelUrl="/models/robot_playground.glb" />
+                    doit avoir du <HeartMorph delayMs={1800} word="cœur" modelUrl={`${import.meta.env.BASE_URL}models/robot_playground.glb`} />
                   </span>
                   .
                 </h1>

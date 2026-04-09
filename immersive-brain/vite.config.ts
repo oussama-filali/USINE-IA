@@ -3,7 +3,8 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  // Use a relative base so the built app works when served from a subfolder (e.g. /USINE-IA/...)
+  base: './',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

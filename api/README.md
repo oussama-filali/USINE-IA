@@ -23,6 +23,21 @@ SUPABASE_ANON_KEY=votre-cle-anon
 PORT=3001
 ```
 
+### Brevo (automatisme de bienvenue)
+
+Si tu as créé un workflow Brevo (email de bienvenue, séquence, etc.), **SMTP ne suffit pas** :
+- SMTP sert uniquement à **envoyer** des emails.
+- Pour déclencher un automatisme Brevo, il faut généralement **ajouter le contact à une liste** via l’API Brevo.
+
+Configurer dans `api/.env` (voir `api/.env.example`) :
+
+```env
+BREVO_API_KEY=...
+BREVO_LIST_ID=123
+```
+
+Avec ces variables, `POST /api/newsletter/subscribe` ajoute / met à jour le contact dans Brevo (et l’ajoute à la liste), puis enregistre aussi l’email dans Supabase.
+
 ### Envoi d'emails (Digest)
 
 Pour envoyer automatiquement un digest d'articles par email, l'API utilise :

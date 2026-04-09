@@ -109,3 +109,7 @@ flowchart TD
 ## Commandes utiles
 - Dev: `cd immersive-brain; npm run dev`
 - Build: `npm run build` (à la racine)
+
+## Déploiement IONOS (noms de fichiers)
+- IONOS peut refuser des fichiers avec espaces/accents/apostrophes. Utiliser des noms ASCII lowercase avec tirets.
+- Le fallback image des agents utilise `logo-minimalist-usine-ia.png` (évite les fichiers “pointeurs”/miniatures invalides).

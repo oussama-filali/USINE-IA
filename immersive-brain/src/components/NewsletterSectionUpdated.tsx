@@ -24,14 +24,29 @@ export default function NewsletterSectionUpdated() {
         body: JSON.stringify({ email }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      const isJson = contentType.includes('application/json');
+      const data = isJson ? await response.json().catch(() => null) : null;
+
+      if (!isJson) {
+        const text = await response.text().catch(() => '');
+        console.error('Newsletter non-JSON response:', {
+          status: response.status,
+          contentType,
+          preview: text.slice(0, 140),
+        });
+        setError(
+          "Le serveur a répondu avec du HTML au lieu de JSON. L’API n’est probablement pas branchée sur /api (prod)."
+        );
+        return;
+      }
 
       if (response.ok) {
         setSubmitted(true);
         setEmail('');
         setTimeout(() => setSubmitted(false), 5000);
       } else {
-        setError(data.error || 'Une erreur est survenue');
+        setError((data as any)?.error || 'Une erreur est survenue');
       }
     } catch (err) {
       setError('Erreur de connexion. Réessayez dans un instant.');

@@ -113,8 +113,8 @@ export function useAgentsCarousel({
     const cardH = 205 + t * 86;
     const perspective = 860 + t * 420;
     const tiltXDeg = -10 + t * 4;
-    const dragSensitivity = 0.0037 - t * 0.0007;
-    const dragThresholdPx = Math.round(20 - t * 5);
+    const dragSensitivity = 0.0039 - t * 0.0007;
+    const dragThresholdPx = Math.round(18 - t * 5);
 
     const openWScale = 1.05 + t * 0.08;
     const openHScale = 1.10 + t * 0.10;
@@ -267,6 +267,12 @@ export function useAgentsCarousel({
 
   const beginDrag = (e: React.PointerEvent, captureEl: HTMLElement) => {
     if (openIndexRef.current !== null) return;
+    // Prevent browser gesture handling from stealing the interaction (mobile).
+    try {
+      e.preventDefault();
+    } catch {
+      // no-op
+    }
     lastOrbitTRef.current = orbitRef ? orbitRef.current.t : null;
     dragRef.current.isDown = true;
     dragRef.current.isDragging = false;
@@ -277,7 +283,11 @@ export function useAgentsCarousel({
     dragRef.current.captureEl = captureEl;
     dragRef.current.axisLock = null;
     suppressClickRef.current = false;
-    captureEl.setPointerCapture(e.pointerId);
+    try {
+      captureEl.setPointerCapture(e.pointerId);
+    } catch {
+      // Some browsers/devices may not support pointer capture reliably.
+    }
   };
 
   const releaseCapture = () => {
@@ -293,7 +303,7 @@ export function useAgentsCarousel({
   };
 
   const onStagePointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    if (e.button !== 0) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
     if (openIndexRef.current !== null) return;
     const target = e.target as HTMLElement | null;
     if (target && target.closest('[data-carousel-card="true"]')) return;
@@ -308,9 +318,14 @@ export function useAgentsCarousel({
     const absDx = Math.abs(dx);
     const absDy = Math.abs(dy);
 
-    // Axis lock: ignore vertical gestures (user is likely navigating slides)
-    if (dragRef.current.axisLock === null && absDx + absDy > 10) {
-      dragRef.current.axisLock = absDy > absDx * 1.2 ? 'y' : 'x';
+    // Axis lock: on mobile we want the carousel to win unless the intent is clearly vertical.
+    const isTouch = e.pointerType === 'touch';
+    const lockTrigger = isTouch ? 14 : 10;
+    const verticalDominance = isTouch ? 2.4 : 1.2;
+    const minVertical = isTouch ? 24 : 0;
+
+    if (dragRef.current.axisLock === null && absDx + absDy > lockTrigger) {
+      dragRef.current.axisLock = absDy > Math.max(minVertical, absDx * verticalDominance) ? 'y' : 'x';
       if (dragRef.current.axisLock === 'y') {
         dragRef.current.isDown = false;
         dragRef.current.isDragging = false;
@@ -328,13 +343,22 @@ export function useAgentsCarousel({
     }
 
     if (!dragRef.current.isDragging) return;
-    const threshold = metricsRef.current.dragThresholdPx;
+
+    if (isTouch) {
+      try {
+        e.preventDefault();
+      } catch {
+        // no-op
+      }
+    }
+    const threshold = isTouch ? Math.min(8, metricsRef.current.dragThresholdPx) : metricsRef.current.dragThresholdPx;
     const dragDistance = Math.max(0, absDx - threshold);
     const dragDirection = dx < 0 ? -1 : 1;
     const dragProgress = clamp01(dragDistance / 72);
     const easedStart = dragProgress * dragProgress;
     const softenedDx = dragDirection * dragDistance * (0.35 + easedStart * 0.65);
-    rotationRef.current.target = dragRef.current.startTarget + softenedDx * metricsRef.current.dragSensitivity;
+    const sensitivity = isTouch ? metricsRef.current.dragSensitivity * 1.55 : metricsRef.current.dragSensitivity;
+    rotationRef.current.target = dragRef.current.startTarget + softenedDx * sensitivity;
   };
 
   const endAnyDrag = (e: React.PointerEvent) => {
