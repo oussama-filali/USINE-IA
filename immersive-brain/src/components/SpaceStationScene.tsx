@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useRef, Suspense } from 'react';
+import { useEffect, useMemo, useRef, Suspense, useState } from 'react';
+import type { MutableRefObject } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, PerspectiveCamera, Preload, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import Particles from './Particles';
 
-// Preload immédiatement pour chargement anticipé
-useGLTF.preload('/models/space_station_3.glb');
+const STATION_GLB_URL = '/models/space_station_3.glb';
+const STATION_HDR_URL =
+  'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/dikhololo_night_1k.hdr';
 
 type CameraPose = {
   position: [number, number, number];
@@ -36,8 +38,8 @@ function getPoseForSlide(slideIndex: number): CameraPose {
   }
 }
 
-function SpaceStationModel() {
-  const { scene } = useGLTF('/models/space_station_3.glb', true);
+function SpaceStationModel({ onReady }: { onReady?: () => void }) {
+  const { scene } = useGLTF(STATION_GLB_URL, true);
   const modelRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
@@ -54,8 +56,10 @@ function SpaceStationModel() {
           }
         }
       });
+
+      onReady?.();
     }
-  }, [scene]);
+  }, [scene, onReady]);
 
   useFrame((state) => {
     if (modelRef.current) {
@@ -70,26 +74,6 @@ function SpaceStationModel() {
       scale={2}
       position={[0, 0, 0]}
     />
-  );
-}
-
-function LoadingGeometry() {
-  const groupRef = useRef<THREE.Group>(null);
-
-  useFrame((state) => {
-    if (!groupRef.current) return;
-    const t = state.clock.elapsedTime;
-    groupRef.current.rotation.y = t * 0.2;
-    groupRef.current.rotation.x = t * 0.06;
-  });
-
-  return (
-    <group ref={groupRef}>
-      <mesh position={[0, 0, 0]}>
-        <torusGeometry args={[2.6, 0.08, 16, 96]} />
-        <meshStandardMaterial color={'#ffffff'} transparent opacity={0.25} metalness={0.6} roughness={0.3} />
-      </mesh>
-    </group>
   );
 }
 
@@ -120,57 +104,95 @@ function CameraRig({ slideIndex }: { slideIndex: number }) {
   return <PerspectiveCamera ref={cameraRef} makeDefault position={[0, 5, 15]} fov={60} />;
 }
 
-function Scene({ slideIndex }: { slideIndex: number }) {
+function OrbitClock({ orbitRef }: { orbitRef?: MutableRefObject<{ t: number }> }) {
+  useFrame((state) => {
+    if (orbitRef) orbitRef.current.t = state.clock.getElapsedTime();
+  });
+  return null;
+}
+
+function Scene({
+  slideIndex,
+  orbitRef,
+  onStationReady,
+}: {
+  slideIndex: number;
+  orbitRef?: MutableRefObject<{ t: number }>;
+  onStationReady?: () => void;
+}) {
+  const [stationReady, setStationReady] = useState(false);
+  const notifiedReadyRef = useRef(false);
+
   useEffect(() => {
     THREE.Cache.enabled = true;
   }, []);
 
   return (
     <>
+      <OrbitClock orbitRef={orbitRef} />
       <CameraRig slideIndex={slideIndex} />
       
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[10, 10, 5]} intensity={2} color="#88ccff" />
-      <directionalLight position={[-10, -10, -5]} intensity={1.2} color="#aa88ff" />
-      <pointLight position={[0, 10, 0]} intensity={1.8} color="#ff88ff" distance={35} decay={2} />
-      <pointLight position={[5, 5, 10]} intensity={1.2} color="#00ffff" distance={25} decay={2} />
+      <ambientLight intensity={1.15} />
+      <directionalLight position={[10, 10, 5]} intensity={2.8} color="#88ccff" />
+      <directionalLight position={[-10, -10, -5]} intensity={1.7} color="#aa88ff" />
+      <pointLight position={[0, 10, 0]} intensity={2.35} color="#ff88ff" distance={40} decay={2} />
+      <pointLight position={[5, 5, 10]} intensity={1.75} color="#00ffff" distance={28} decay={2} />
 
-      <Particles />
+      {stationReady && <Particles />}
       
-      <Suspense fallback={<LoadingGeometry />}>
-        <SpaceStationModel />
-        <Environment files="https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/dikhololo_night_1k.hdr" />
+      <Suspense fallback={null}>
+        <SpaceStationModel
+          onReady={() => {
+            setStationReady(true);
+            if (!notifiedReadyRef.current) {
+              notifiedReadyRef.current = true;
+              onStationReady?.();
+            }
+          }}
+        />
+        <Environment files={STATION_HDR_URL} />
         <Preload all />
       </Suspense>
 
-      <fog attach="fog" args={['#000000', 12, 50]} />
+      <fog attach="fog" args={['#000000', 18, 70]} />
     </>
   );
 }
 
-export default function SpaceStationScene({ slideIndex = -1 }: { slideIndex?: number }) {
+export default function SpaceStationScene({
+  slideIndex = -1,
+  orbitRef,
+  frameloop = 'always',
+  onStationReady,
+}: {
+  slideIndex?: number;
+  orbitRef?: MutableRefObject<{ t: number }>;
+  frameloop?: 'always' | 'demand' | 'never';
+  onStationReady?: () => void;
+}) {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
     <div className="absolute inset-0 pointer-events-none">
       <Canvas
         className="pointer-events-none"
+        frameloop={frameloop}
         gl={{
           antialias: !isMobile,
           alpha: true,
           powerPreference: isMobile ? 'low-power' : 'high-performance',
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.8,
+          toneMappingExposure: 2.35,
         }}
         dpr={isMobile ? [1, 1] : [1, 2]}
       >
         <color attach="background" args={['#000000']} />
-        <Scene slideIndex={slideIndex} />
+        <Scene slideIndex={slideIndex} orbitRef={orbitRef} onStationReady={onStationReady} />
       </Canvas>
 
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-radial from-purple-600/8 via-transparent to-black opacity-40" />
-        <div className="absolute inset-0 bg-gradient-radial from-cyan-600/6 via-transparent to-transparent opacity-30" />
+        <div className="absolute inset-0 bg-gradient-radial from-purple-600/8 via-transparent to-black opacity-28" />
+        <div className="absolute inset-0 bg-gradient-radial from-cyan-600/6 via-transparent to-transparent opacity-22" />
       </div>
     </div>
   );

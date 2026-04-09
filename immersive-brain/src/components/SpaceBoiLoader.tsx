@@ -79,5 +79,3 @@ export default function SpaceBoiLoader({ yOffset = 0.5 }: SpaceBoiLoaderProps) {
 		</group>
 	);
 }
-
-useGLTF.preload(MODEL_URL);

@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SpaceStationScene from './components/SpaceStationScene';
 import Intro from './components/Intro';
-import ProjectsSection from './components/ProjectsSection';
+import ProjectsSection from './components/agents/AgentsSection';
 import NewsletterSectionUpdated from './components/NewsletterSectionUpdated';
 import HeartMorph from './components/HeartMorph';
 import FlipText from './components/FlipText';
 import SpaceBoiSection from './components/SpaceBoiSection';
+import { attachLiquidEffect } from './liquid';
 
 const slides = [
   { id: 'hero', title: 'Hero' },
@@ -19,12 +20,16 @@ const slides = [
 
 export default function App() {
   const [introComplete, setIntroComplete] = useState(false);
+  const [preloadStarted, setPreloadStarted] = useState(false);
+  const [stationReady, setStationReady] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(-1);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastWheelTime = useRef<number>(0);
+  const orbitRef = useRef<{ t: number }>({ t: 0 });
+  const wheelAccumRef = useRef(0);
+  const wheelDirRef = useRef<1 | -1 | 0>(0);
   const touchStartY = useRef<number>(0);
   const touchEndY = useRef<number>(0);
+  const touchStartedInScrollable = useRef(false);
 
   // Auto-advance from 3D showcase to hero
   useEffect(() => {
@@ -33,11 +38,28 @@ export default function App() {
         setIsTransitioning(true);
         setCurrentSlide(0);
         setTimeout(() => setIsTransitioning(false), 800);
-      }, 3000);
+      }, 60);
 
       return () => clearTimeout(timer);
     }
   }, [introComplete, currentSlide]);
+
+  // WebGPU liquid effect: attach to buttons (excluding carousel cards)
+  useEffect(() => {
+    if (!introComplete) return;
+    const buttons = Array.from(document.querySelectorAll('button')) as HTMLElement[];
+    buttons.forEach((btn) => {
+      if (btn.closest('[data-carousel-card="true"]')) return;
+      void attachLiquidEffect(btn, {
+        kind: 'button',
+        radiusPx: 16,
+        baseAlpha: 0.22,
+        glowAlpha: 1.0,
+        redGlow: 1.0,
+        dynamicRect: true,
+      });
+    });
+  }, [introComplete]);
 
   const goToSlideId = (id: string) => {
     const idx = slides.findIndex(s => s.id === id);
@@ -68,38 +90,45 @@ export default function App() {
     if (!introComplete) return;
 
     const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      
-      const now = Date.now();
-      if (now - lastWheelTime.current < 120) return;
-      
-      if (isTransitioning) return;
-      
-      if (wheelTimeoutRef.current) {
-        clearTimeout(wheelTimeoutRef.current);
+      const target = e.target as HTMLElement | null;
+      // Allow native scrolling inside marked scroll areas (e.g. modal description)
+      if (target && target.closest('[data-allow-native-scroll="true"]')) {
+        return;
       }
 
-      const threshold = 8;
-      if (Math.abs(e.deltaY) < threshold) return;
+      e.preventDefault();
 
-      lastWheelTime.current = now;
+      if (isTransitioning) return;
 
-      wheelTimeoutRef.current = setTimeout(() => {
-        if (e.deltaY > 0) {
-          navigateSlides('next');
-        } else if (e.deltaY < 0) {
-          navigateSlides('prev');
-        }
-      }, 80);
+      // Normalisation: trackpad vs wheel vs deltaMode
+      let deltaY = e.deltaY;
+      if (!Number.isFinite(deltaY) || deltaY === 0) return;
+
+      // deltaMode: 0=pixels, 1=lines, 2=pages
+      if (e.deltaMode === 1) deltaY *= 40;
+      if (e.deltaMode === 2) deltaY *= 800;
+
+      const dir: 1 | -1 = deltaY > 0 ? 1 : -1;
+      if (wheelDirRef.current !== 0 && dir !== wheelDirRef.current) {
+        // Inversion de sens: on “annule” l'élan accumulé pour que remonter réponde immédiatement.
+        wheelAccumRef.current = 0;
+      }
+      wheelDirRef.current = dir;
+      wheelAccumRef.current += deltaY;
+
+      const trigger = 140;
+      if (Math.abs(wheelAccumRef.current) < trigger) return;
+
+      wheelAccumRef.current = 0;
+      wheelDirRef.current = 0;
+
+      navigateSlides(dir > 0 ? 'next' : 'prev');
     };
 
     window.addEventListener('wheel', handleWheel, { passive: false });
     
     return () => {
       window.removeEventListener('wheel', handleWheel);
-      if (wheelTimeoutRef.current) {
-        clearTimeout(wheelTimeoutRef.current);
-      }
     };
   }, [introComplete, currentSlide, isTransitioning]);
 
@@ -109,14 +138,24 @@ export default function App() {
 
     const handleTouchStart = (e: TouchEvent) => {
       touchStartY.current = e.touches[0].clientY;
+      const target = e.target as HTMLElement | null;
+      touchStartedInScrollable.current = !!(
+        target &&
+        (target.closest('[data-allow-native-scroll="true"]') || target.closest('[data-disable-slide-nav="true"]'))
+      );
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (touchStartedInScrollable.current) return;
       e.preventDefault();
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
       if (isTransitioning) return;
+      if (touchStartedInScrollable.current) {
+        touchStartedInScrollable.current = false;
+        return;
+      }
 
       touchEndY.current = e.changedTouches[0].clientY;
       const deltaY = touchStartY.current - touchEndY.current;
@@ -145,27 +184,41 @@ export default function App() {
   const slide = currentSlide >= 0 ? slides[currentSlide] : null;
   const isPlayground = slide?.id === 'playground';
   const isAgents = slide?.id === 'agents';
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const shouldMountStation = introComplete || (!isMobile && preloadStarted);
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black text-white">
       {/* 3D Background - ALWAYS VISIBLE */}
       <div
         className="absolute inset-0 transition-opacity duration-500"
-        style={{ zIndex: 0, opacity: introComplete ? 1 : 0 }}
+        style={{ zIndex: 0, opacity: introComplete && stationReady ? 1 : 0 }}
         aria-hidden={!introComplete}
       >
-        {!isPlayground && <SpaceStationScene slideIndex={currentSlide} />}
+        {shouldMountStation && !isPlayground && (
+          <SpaceStationScene
+            slideIndex={currentSlide}
+            orbitRef={orbitRef}
+            frameloop={introComplete ? 'always' : 'demand'}
+            onStationReady={() => setStationReady(true)}
+          />
+        )}
       </div>
 
       {/* Intro overlay (attend le vrai chargement) */}
-      {!introComplete && <Intro onComplete={() => setIntroComplete(true)} />}
+      {!introComplete && (
+        <Intro
+          onComplete={() => setIntroComplete(true)}
+          onPreloadStart={() => setPreloadStarted(true)}
+        />
+      )}
 
       {/* Dark overlay that increases with slides (except during 3D showcase) */}
       <div 
         className="absolute inset-0 bg-black transition-opacity duration-700 ease-out"
         style={{ 
           zIndex: 1,
-          opacity: currentSlide === -1 ? 0 : currentSlide === 0 ? 0.2 : 0.45
+          opacity: currentSlide === -1 ? 0 : currentSlide === 0 ? 0.16 : 0.32
         }}
       />
 
@@ -212,7 +265,7 @@ export default function App() {
               transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
             }}
           >
-            <ProjectsSection onNavigateToId={goToSlideId} />
+            <ProjectsSection onNavigateToId={goToSlideId} orbitRef={orbitRef} />
           </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center px-6" style={{ zIndex: 2 }}>
@@ -362,7 +415,7 @@ export default function App() {
 
       {/* Slide indicator */}
       {introComplete && currentSlide >= 0 && (
-        <div className="absolute bottom-8 right-8 flex flex-col gap-2" style={{ zIndex: 3 }}>
+        <div className="hidden md:flex absolute bottom-8 right-8 flex-col gap-2" style={{ zIndex: 3 }}>
           {slides.map((_, idx) => (
             <div
               key={idx}

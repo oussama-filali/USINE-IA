@@ -8,7 +8,7 @@ interface FlipTextProps {
 
 export default function FlipText({ text, className = '', delayMs = 0 }: FlipTextProps) {
   const [flippedIndices, setFlippedIndices] = useState<Set<number>>(new Set());
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const letters = text.split('');
 
   useEffect(() => {
