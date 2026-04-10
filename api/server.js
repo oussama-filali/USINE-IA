@@ -13,6 +13,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const HOST = process.env.HOST || '0.0.0.0';
 
 // Middleware
 app.use(cors());
@@ -238,8 +239,8 @@ if (hasFrontendDist) {
 }
 
 // Démarrage du serveur
-app.listen(PORT, () => {
-  console.log(`🚀 API USINE-IA démarrée sur http://localhost:${PORT}`);
-  console.log(`📧 Newsletter endpoint: http://localhost:${PORT}/api/newsletter/subscribe`);
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 API USINE-IA démarrée sur http://${HOST}:${PORT}`);
+  console.log(`📧 Newsletter endpoint: http://${HOST}:${PORT}/api/newsletter/subscribe`);
   console.log(`🖼️ Frontend dist: ${hasFrontendDist ? frontendDistDir : '(absent)'} (override with FRONTEND_DIST_DIR)`);
 });
