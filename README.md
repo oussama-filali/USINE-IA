@@ -6,7 +6,7 @@
 
 **🌐 En ligne : [usineiaclub.store](http://usineiaclub.store)**
 
-Collectif marseillais (2024) autour de l'**Intelligence Artificielle Émotionnelle** — Akram, Oussama & Yannis. Ce dépôt contient notre vitrine : une **expérience web immersive 3D** qui présente le collectif et ses agents IA (Sophia, [Dino Bot](https://github.com/oussama-filali/crispy-umbrella-dino-bot)…), adossée à une API de contenu et de newsletter.
+Collectif marseillais (2024) autour de l'**Intelligence Artificielle Émotionnelle** — Akram, Oussama & Yannis. Ce dépôt contient notre vitrine : une **expérience web immersive 3D** qui présente le collectif et ses agents IA (Sophia, [Dino Bot](https://github.com/oussama-filali/dino-bot)…), adossée à une API de contenu et de newsletter.
 
 ## 🗂️ Structure du dépôt
 
