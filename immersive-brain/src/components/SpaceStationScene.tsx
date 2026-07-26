@@ -4,6 +4,12 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, PerspectiveCamera, Preload, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import Particles from './Particles';
+import ErrorBoundary from './ErrorBoundary';
+import { isWebGLAvailable } from '../utils/webgl';
+
+const STATIC_FALLBACK = (
+  <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a1a] via-black to-black pointer-events-none" />
+);
 
 const STATION_GLB_URL = `${import.meta.env.BASE_URL}models/space_station_3.glb`;
 const STATION_HDR_URL =
@@ -171,29 +177,41 @@ export default function SpaceStationScene({
   onStationReady?: () => void;
 }) {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [webglOk] = useState(() => isWebGLAvailable());
+
+  useEffect(() => {
+    // Sans WebGL on ne bloque pas le parent en attente d'un "ready" qui ne viendra jamais.
+    if (!webglOk) onStationReady?.();
+  }, [webglOk, onStationReady]);
+
+  if (!webglOk) {
+    return STATIC_FALLBACK;
+  }
 
   return (
-    <div className="absolute inset-0 pointer-events-none">
-      <Canvas
-        className="pointer-events-none"
-        frameloop={frameloop}
-        gl={{
-          antialias: !isMobile,
-          alpha: true,
-          powerPreference: isMobile ? 'low-power' : 'high-performance',
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 2.35,
-        }}
-        dpr={isMobile ? [1, 1] : [1, 2]}
-      >
-        <color attach="background" args={['#000000']} />
-        <Scene slideIndex={slideIndex} orbitRef={orbitRef} onStationReady={onStationReady} />
-      </Canvas>
-
+    <ErrorBoundary fallback={STATIC_FALLBACK}>
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-radial from-purple-600/8 via-transparent to-black opacity-28" />
-        <div className="absolute inset-0 bg-gradient-radial from-cyan-600/6 via-transparent to-transparent opacity-22" />
+        <Canvas
+          className="pointer-events-none"
+          frameloop={frameloop}
+          gl={{
+            antialias: !isMobile,
+            alpha: true,
+            powerPreference: isMobile ? 'low-power' : 'high-performance',
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 2.35,
+          }}
+          dpr={isMobile ? [1, 1] : [1, 2]}
+        >
+          <color attach="background" args={['#000000']} />
+          <Scene slideIndex={slideIndex} orbitRef={orbitRef} onStationReady={onStationReady} />
+        </Canvas>
+
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-radial from-purple-600/8 via-transparent to-black opacity-28" />
+          <div className="absolute inset-0 bg-gradient-radial from-cyan-600/6 via-transparent to-transparent opacity-22" />
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
